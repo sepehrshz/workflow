@@ -1,10 +1,15 @@
-import Flow from "./Flow"
+import Flow from "../components/Flow"
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
   return (
-    <div style={{height: '100vh', width: '100%'}}>
-      <Flow />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Flow />}>
+        </Route>
+      </Routes>
+    </BrowserRouter>
+      // <div style={{height: '100vh', width: '100%'}}>
   )
 }
 
