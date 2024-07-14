@@ -136,7 +136,7 @@
       "userAgentDesc": "Chrome 126.0.0 | Linux | Other",
       "status": "connected",
       "isSuccess": "true",
-      "result": "",
+      "result": "login",
       "sessionIdentifier": "f8b462c251"
     },
     {
@@ -148,9 +148,9 @@
       "clientIpDesc": "LAN",
       "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
       "userAgentDesc": "Chrome 126.0.0 | Linux | Other",
-      "status": "connected",
+      "status": "disconnected",
       "isSuccess": "true",
-      "result": "",
+      "result": "signout",
       "sessionIdentifier": "2c75b15820"
     },
     {
@@ -164,7 +164,7 @@
       "userAgentDesc": "Chrome 126.0.0 | Linux | Other",
       "status": "connected",
       "isSuccess": "true",
-      "result": "",
+      "result": "login",
       "sessionIdentifier": "198fab1431"
     },
     {
@@ -178,7 +178,7 @@
       "userAgentDesc": "Chrome 126.0.0 | Linux | Other",
       "status": "connected",
       "isSuccess": "true",
-      "result": "",
+      "result": "login",
       "sessionIdentifier": "bc22d4156e"
     },
     {
@@ -192,7 +192,7 @@
       "userAgentDesc": "Chrome 126.0.0 | Windows 10 | Other",
       "status": "connected",
       "isSuccess": "true",
-      "result": "",
+      "result": "login",
       "sessionIdentifier": "270968924b"
     },
     {
@@ -206,7 +206,7 @@
       "userAgentDesc": "Chrome 126.0.0 | Windows 10 | Other",
       "status": "connected",
       "isSuccess": "true",
-      "result": "",
+      "result": "login",
       "sessionIdentifier": "f262375933"
     },
     {
@@ -220,7 +220,7 @@
       "userAgentDesc": "Chrome 126.0.0 | Windows 10 | Other",
       "status": "connected",
       "isSuccess": "true",
-      "result": "",
+      "result": "login",
       "sessionIdentifier": "06551289f8"
     },
     {
@@ -234,7 +234,7 @@
       "userAgentDesc": "Chrome 126.0.0 | Windows 10 | Other",
       "status": "connected",
       "isSuccess": "true",
-      "result": "",
+      "result": "login",
       "sessionIdentifier": "09eb7b2e8a"
     },
     {
@@ -248,7 +248,7 @@
       "userAgentDesc": "Chrome 126.0.0 | Windows 10 | Other",
       "status": "connected",
       "isSuccess": "true",
-      "result": "",
+      "result": "login",
       "sessionIdentifier": "16173eb414"
     },
     {
@@ -262,7 +262,7 @@
       "userAgentDesc": "Chrome 126.0.0 | Windows 10 | Other",
       "status": "connected",
       "isSuccess": "true",
-      "result": "",
+      "result": "login",
       "sessionIdentifier": "00ba06c937"
     },
     {
@@ -276,7 +276,7 @@
       "userAgentDesc": "Chrome 126.0.0 | Windows 10 | Other",
       "status": "connected",
       "isSuccess": "true",
-      "result": "",
+      "result": "login",
       "sessionIdentifier": "bc0b768007"
     }
   ]

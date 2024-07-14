@@ -24,8 +24,8 @@ const Node = ({userLog}) => {
                     <circle r="5" cx="5" cy="5" fill="red"/>
                 </svg>
             }
-                <div className={click ? "bg-white border-2 animate-fadeDown rounded-md p-4 shadow-lg border-slate-400 absolute w-full left-0 top-full mt-2 transition-all duration-500" 
-                    : "border-2 animate-fadeDown rounded-md p-4 shadow-lg border-slate-400 absolute w-full left-0 top-full mt-2 -translate-y-10 opacity-0 transition-all duration-500"}>
+                <div className={click ? "bg-white border-2 rounded-md p-4 shadow-lg border-slate-400 absolute w-full left-0 top-full opacity-100 mt-2 transition-all duration-500" 
+                    : "border-2 rounded-md p-4 shadow-lg border-slate-400 absolute w-full left-0 top-full mt-2 -translate-y-10 opacity-0 transition-all duration-500"}>
                     <div>IP: {userLog.clientIp}</div>
                     <div className="mt-2">IpDesc: {userLog.clientIpDesc}</div>
                     <div>Time: {userLog.createdTime}</div>

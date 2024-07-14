@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import Node from './Node';
-import UserNode from './UserNode';
+import Node from '../../components/Node';
+import UserNode from '../../components/UserNode';
 import { ReactFlow } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import userLogs from '../assets/userLogs.json';
+import userLogs from '../../assets/userLogs.json';
 
 function Flow() {
 const initialNodes = [], initialEdges = [];
@@ -27,7 +27,7 @@ userNames.forEach((user, index) => {
   initialNodes.push({
     id: user,
     data: {label: <UserNode userName={user} />}, 
-    position: {x: 150, y: (index+1) * 205},
+    position: {x: 300, y: (index+1) * 205},
     count: 0,
     type: "output",
     targetPosition: "right",
@@ -66,7 +66,7 @@ selectedLogs.forEach((log, index) => {
         id: user.id+user.count, 
         type: 'custom',
         data: {label: <Node userLog={selectedLogs[index]} />}, 
-        position: { y: positionY, x: ((user.count + 1) * 300) - 150},
+        position: { y: positionY, x: ((user.count + 1) * 300)},
         sourcePosition: 'right',
         targetPosition: 'left',
         style: {
