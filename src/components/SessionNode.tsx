@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Handle, Position } from "@xyflow/react";
-const Node = ({userLog}) => {
-    const [click, setClick] = useState(false)
+const SessionNode = ({userSession}) => {
+    const [click, setClick] = useState(false);
     return (
         <div onClick={() => setClick(prevClick => !prevClick)}>
             <Handle
@@ -14,9 +14,9 @@ const Node = ({userLog}) => {
             type="target"
             position={Position.Left}
             />
-            <div>{userLog.userName}</div>
-            <div>{userLog.result ? `Action: ${userLog.result}` : 'Action: login'}</div>
-            {userLog.status == "connected" ? 
+            <div>{userSession.userName}</div>
+            <div>{userSession.appName}</div>
+            {userSession.status == "connected" ? 
                 <svg className="absolute top-2 left-2" height="10" width="10">
                     <circle r="5" cx="5" cy="5" fill="green"/>
                 </svg> : 
@@ -24,14 +24,13 @@ const Node = ({userLog}) => {
                     <circle r="5" cx="5" cy="5" fill="red"/>
                 </svg>
             }
-                <div className={click ? "bg-white border-2 rounded-md p-4 shadow-lg border-slate-400 absolute w-full left-0 top-full opacity-100 mt-2 transition-all duration-500" 
-                    : "border-2 rounded-md p-4 shadow-lg border-slate-400 absolute w-full left-0 top-full mt-2 -translate-y-10 opacity-0 transition-all duration-500"}>
-                    <div>IP: {userLog.clientIp}</div>
-                    <div className="mt-2">IpDesc: {userLog.clientIpDesc}</div>
-                    <div>Time: {userLog.createdTime}</div>
-                </div>
+            <div className={click ? "border-2 rounded-md p-4 shadow-lg border-slate-400 absolute w-full left-0 top-full mt-2 transition-all duration-500"
+                : "border-2 rounded-md p-4 shadow-lg border-slate-400 absolute w-full left-0 top-full mt-2 -translate-y-10 opacity-0 transition-all duration-500"}> 
+                <div>IP: {userSession.clientIp}</div>
+                <div>Duration: {userSession.duration}</div>
+            </div>
         </div>
     );
 }
 
-export default Node;
+export default SessionNode;

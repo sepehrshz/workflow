@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import Node from '../../components/Node';
-import UserNode from '../../components/UserNode';
+import Node from '../components/LogNode';
+import UserNode from '../components/UserNode';
 import { ReactFlow } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import userLogs from '../../assets/userLogs.json';
+import userLogs from '../assets/userLogs.json';
+import { Link } from 'react-router-dom';
 
-function Flow() {
+function LogsFlow() {
 const initialNodes = [], initialEdges = [];
 const selectedLogs = [];
 
@@ -26,7 +27,7 @@ userNames.forEach((user, index) => {
   const lastLogout = userLogs.find(log => log.result === 'signout' && log.userName === user);
   initialNodes.push({
     id: user,
-    data: {label: <UserNode userName={user} />}, 
+    data: {label: <Link className='w-full h-full flex justify-center items-center' to={`./user/${user}`}><UserNode userName={user} /></Link>}, 
     position: {x: 300, y: (index+1) * 205},
     count: 0,
     type: "output",
@@ -94,4 +95,4 @@ selectedLogs.forEach((log, index) => {
   );
 }
 
-export default Flow;
+export default LogsFlow;

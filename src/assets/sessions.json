@@ -34,7 +34,7 @@
       "clientIpDesc": "LAN",
       "userAgent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:127.0) Gecko/20100101 Firefox/127.0",
       "userAgentDesc": "Firefox 127.0 | Ubuntu | Other",
-      "status": "disconnected",
+      "status": "connected",
       "reviewed": "false",
       "message": "The User [mali] forcibly close the session",
       "operations": "[\"clipboard\",\"upload\",\"download\",\"edit\",\"rename\",\"delete\",\"log_success\",\"supervisor_interact\"]"
@@ -48,7 +48,7 @@
       "accessType": "portal",
       "protocol": "ssh",
       "appName": "SSH-Lab",
-      "userName": "Mohammad Ali Abbasian",
+      "userName": "Sepehr Shirazi",
       "dstIp": "192.168.6.119",
       "clientIp": "192.168.6.104",
       "clientIpDesc": "LAN",
@@ -108,7 +108,7 @@
       "accessType": "portal",
       "protocol": "ssh",
       "appName": "SSH-Lab",
-      "userName": "Mohammad Ali Abbasian",
+      "userName": "Sepehr Shirazi",
       "dstIp": "192.168.6.119",
       "clientIp": "192.168.6.104",
       "clientIpDesc": "LAN",
@@ -168,7 +168,7 @@
       "accessType": "portal",
       "protocol": "ssh",
       "appName": "SSH-Lab",
-      "userName": "Mohammad Ali Abbasian",
+      "userName": "Sepehr Shirazi",
       "dstIp": "192.168.6.119",
       "clientIp": "192.168.6.104",
       "clientIpDesc": "LAN",
@@ -399,4 +399,4 @@
       "message": "",
       "operations": "[\"clipboard\",\"upload\",\"download\",\"edit\",\"rename\",\"delete\",\"log_success\",\"supervisor_interact\"]"
     }
-  ],
+  ]

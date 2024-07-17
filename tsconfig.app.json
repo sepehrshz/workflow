@@ -23,5 +23,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "components/Node.tsx", "src/pages/Flow.tsx", "components/UserNode.tsx"]
+  "include": ["src", "src/components/LogNode.tsx", "src/pages/LogsFlow.tsx", "src/components/UserNode.tsx"]
 }
