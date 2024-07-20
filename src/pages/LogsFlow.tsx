@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Node from "../components/LogNode";
 import UserNode from "../components/UserNode";
-import { ReactFlow } from "@xyflow/react";
+import { ReactFlow, Background, MiniMap, Controls } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import userLogs from "../assets/userLogs.json";
 import { Link } from "react-router-dom";
@@ -101,7 +101,12 @@ function LogsFlow() {
 
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
-  return <ReactFlow nodes={nodes} edges={edges} />;
+  return (
+    <ReactFlow nodes={nodes} edges={edges}>
+      <Background color="grey" gap={16} />
+      <Controls />
+    </ReactFlow>
+  );
 }
 
 export default LogsFlow;

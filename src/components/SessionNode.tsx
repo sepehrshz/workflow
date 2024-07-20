@@ -1,9 +1,14 @@
 import { useState } from "react";
 import { Handle, Position } from "@xyflow/react";
+import profile from "../assets/profile.png";
+
 const SessionNode = ({ userSession }) => {
   const [click, setClick] = useState(false);
   return (
-    <div onClick={() => setClick((prevClick) => !prevClick)}>
+    <div
+      className="flex items-center w-full px-2"
+      onClick={() => setClick((prevClick) => !prevClick)}
+    >
       <Handle
         className="h-4 w-4 border-4 bg-white border-[#cc33ff]"
         type="source"
@@ -14,22 +19,15 @@ const SessionNode = ({ userSession }) => {
         type="target"
         position={Position.Left}
       />
-      <div>{userSession.userName}</div>
-      <div>{userSession.appName}</div>
-      {userSession.status == "connected" ? (
-        <svg className="absolute top-2 left-2" height="10" width="10">
-          <circle r="5" cx="5" cy="5" fill="green" />
-        </svg>
-      ) : (
-        <svg className="absolute top-2 left-2" height="10" width="10">
-          <circle r="5" cx="5" cy="5" fill="red" />
-        </svg>
-      )}
+      <div className="border border-gray-400 mr-1 flex justify-center items-center rounded-md h-12 w-12">
+        <img className="h-3/4 w-3/4" src={profile} />
+      </div>
+      <div className="w-3/4">{userSession.appName}</div>
       <div
         className={
           click
-            ? "border-2 rounded-md p-4 shadow-lg border-slate-400 absolute w-full left-0 top-full mt-2 transition-all duration-500"
-            : "border-2 rounded-md p-4 shadow-lg border-slate-400 absolute w-full left-0 top-full mt-2 -translate-y-10 opacity-0 transition-all duration-500"
+            ? "border-2 bg-white rounded-md p-4 shadow-lg border-slate-400 absolute w-full left-0 top-full mt-2 transition-all duration-500"
+            : "border-2 bg-white rounded-md p-4 shadow-lg border-slate-400 absolute w-full left-0 top-full mt-2 -translate-y-10 opacity-0 transition-all duration-500"
         }
       >
         <div>IP: {userSession.clientIp}</div>

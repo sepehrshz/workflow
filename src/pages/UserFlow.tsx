@@ -1,5 +1,7 @@
 import {
   ReactFlow,
+  Controls,
+  Background,
   useEdgesState,
   useNodesState,
   getConnectedEdges,
@@ -12,7 +14,7 @@ import "@xyflow/react/dist/style.css";
 import userLogs from "../assets/userLogs.json";
 import userSession from "../assets/sessions.json";
 import { useParams } from "react-router-dom";
-import { ReactElement, useCallback } from "react";
+import { ReactElement, useCallback, useEffect } from "react";
 import UserNode from "../components/UserNode";
 import LogNode from "../components/LogNode";
 import SessionNode from "../components/SessionNode";
@@ -36,6 +38,18 @@ function UserFlow() {
     target: string;
     animated: boolean;
   }
+
+  const addEdge = (newEdge: Edge) => {
+    setEdges((prev) => [...prev, newEdge]);
+  };
+
+  //   const deleteEdge = (index: number) => {
+  //     // const newEdges = edges.filter((edge: Edge) => edge.id !== id);
+  //     edges.splice(index, 1);
+  //     console.log(edges);
+  //     setEdges(edges);
+  //     console.log(edges);
+  //   };
 
   const initialNodes: Node[] = [];
   const initialEdges: Edge[] = [];
@@ -78,102 +92,6 @@ function UserFlow() {
       2,
     prevloginIndex = 0;
 
-  const expand = (loginIndex: number, signoutIndex: number) => {
-    const expandNodeIndex = initialNodes.findIndex(
-      (item) => item.id === loginIndex + "-expand",
-    );
-    initialNodes.splice(expandNodeIndex, 1);
-
-    const filteredSessionTime = filteredSession.filter(
-      (item) =>
-        new Date(item.createdTime) >
-          new Date(filteredLog[loginIndex].createdTime) &&
-        new Date(item.createdTime) <
-          new Date(filteredLog[signoutIndex].createdTime),
-    );
-
-    const expandEdgeIndex = initialEdges.findIndex(
-      (item) => item.id === "e-" + loginIndex + "-expand",
-    );
-    initialEdges.splice(expandEdgeIndex, 1);
-    const edgeToDelete = initialEdges.findIndex(
-      (item) => item.source === loginIndex + "-expand",
-    );
-    initialEdges.splice(edgeToDelete, 1);
-    setEdges(initialEdges);
-
-    const loginNode = initialNodes.find(
-      (item) => item.id == loginIndex.toString(),
-    );
-    filteredSessionTime.forEach((session, index) => {
-      initialNodes.push({
-        id: `session-${loginIndex}-${index}`,
-        type: "custom",
-        data: {
-          label: (
-            <SessionNode
-              key={`session-${loginIndex}-${index}`}
-              userSession={filteredSessionTime[index]}
-            />
-          ),
-        },
-        position: {
-          x: loginNode!.position.x + (index + 1) * 300,
-          y: loginNode!.position.y,
-        },
-        sourcePosition: "right",
-        targetPosition: "left",
-        style: {
-          width: "200px",
-          height: "70px",
-          fontSize: "13px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          cursor: "pointer",
-          border: "2px solid #cc33ff",
-          borderRadius: "6px",
-          visibility: "visible",
-        },
-      });
-      setNodes(initialNodes);
-
-      if (index === 0) {
-        const newEdge = {
-          id: `e-session-login[${loginIndex}]-${index}`,
-          source: loginIndex.toString(),
-          target: `session-${loginIndex}-${index}`,
-          animated: true,
-        };
-        setEdges((prev) => [...prev, newEdge]);
-      } else {
-        setEdges((prevEdges) => [
-          ...prevEdges,
-          {
-            id: `e-session-${loginIndex}-${index - 1}-${index}`,
-            source: `session-${loginIndex}-${index - 1}`,
-            target: `session-${loginIndex}-${index}`,
-            animated: true,
-          },
-        ]);
-      }
-      if (index === filteredSessionTime.length - 1) {
-        const signoutNode = initialNodes.find(
-          (item) => item.id == signoutIndex.toString(),
-        );
-        signoutNode!.position.x = loginNode!.position.x + (index + 2) * 300;
-        const newEdge = {
-          id: `e-session-${index}-${signoutIndex}`,
-          source: `session-${loginIndex}-${index}`,
-          target: signoutIndex.toString(),
-          animated: true,
-        };
-        setEdges((prev) => [...prev, newEdge]);
-      }
-    });
-    console.log(edges);
-  };
-
   filteredLog.forEach((log, index) => {
     if (log.result === "login") {
       prevloginIndex = index;
@@ -212,7 +130,7 @@ function UserFlow() {
           label: (
             <div
               className="w-full h-10 flex items-center justify-center"
-              onClick={() => expand(loginIndex, index)}
+              onClick={() => expand(loginIndex, index, true)}
             >
               <Handle
                 className="h-4 w-4 border-4 bg-white border-gray-400"
@@ -280,8 +198,222 @@ function UserFlow() {
     }
   });
 
+  const expand = (
+    loginIndex: number,
+    signoutIndex: number,
+    firstTime: boolean,
+  ) => {
+    const expandNodeIndex = initialNodes.findIndex(
+      (item) => item.id === loginIndex + "-expand",
+    );
+    initialNodes.splice(expandNodeIndex, 1);
+
+    const filteredSessionTime = filteredSession.filter(
+      (item) =>
+        new Date(item.createdTime) >
+          new Date(filteredLog[loginIndex].createdTime) &&
+        new Date(item.createdTime) <
+          new Date(filteredLog[signoutIndex].createdTime),
+    );
+
+    // const expandEdgeIndex = edges.findIndex(
+    //   (item) => item.id === "e-" + loginIndex + "-expand",
+    // );
+
+    // const edgeToDelete = edges.findIndex(
+    //   (item) => item.source === loginIndex + "-expand",
+    // );
+
+    const loginNode = initialNodes.find(
+      (item) => item.id == loginIndex.toString(),
+    );
+    filteredSessionTime.forEach((session, index) => {
+      initialNodes.push({
+        id: `session-${loginIndex}-${index}`,
+        type: "custom",
+        data: {
+          label: (
+            <SessionNode
+              key={`session-${loginIndex}-${index}`}
+              userSession={filteredSessionTime[index]}
+            />
+          ),
+        },
+        position: {
+          x: loginNode!.position.x + (index + 1) * 300,
+          y: loginNode!.position.y,
+        },
+        sourcePosition: "right",
+        targetPosition: "left",
+        style: {
+          width: "200px",
+          height: "70px",
+          fontSize: "13px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          cursor: "pointer",
+          border: "2px solid #cc33ff",
+          borderRadius: "6px",
+          visibility: "visible",
+        },
+      });
+      setNodes(initialNodes);
+
+      if (index === 0 && firstTime) {
+        const newEdge = {
+          id: `e-session-login[${loginIndex}]-${index}`,
+          source: loginIndex.toString(),
+          target: `session-${loginIndex}-${index}`,
+          animated: true,
+        };
+        addEdge(newEdge);
+      } else if (firstTime) {
+        const newEdge = {
+          id: `e-session-${loginIndex}-${index - 1}-${index}`,
+          source: `session-${loginIndex}-${index - 1}`,
+          target: `session-${loginIndex}-${index}`,
+          animated: true,
+        };
+        addEdge(newEdge);
+      }
+      if (index === filteredSessionTime.length - 1) {
+        const signoutNode = initialNodes.find(
+          (item) => item.id == signoutIndex.toString(),
+        );
+        signoutNode!.position.x = loginNode!.position.x + (index + 2) * 300;
+        if (firstTime) {
+          const signoutEdge = {
+            id: `e-session-${index}-${signoutIndex}`,
+            source: `session-${loginIndex}-${index}`,
+            target: signoutIndex.toString(),
+            animated: true,
+          };
+          addEdge(signoutEdge);
+        }
+        // shrink node
+        initialNodes.push({
+          id: loginIndex + "-shrink",
+          data: {
+            label: (
+              <div
+                className="w-full h-10 flex items-center justify-center"
+                onClick={() => shrink(loginIndex, signoutIndex, index)}
+              >
+                <Handle
+                  className="h-4 w-4 border-4 bg-white border-gray-400"
+                  type="target"
+                  position={Position.Left}
+                />
+                <div>Shrink</div>
+              </div>
+            ),
+          },
+          position: {
+            x: signoutNode!.position.x + 300,
+            y: signoutNode!.position.y + 15,
+          },
+          targetPosition: "left",
+          style: {
+            width: "100px",
+            height: "40px",
+            fontSize: "13px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            cursor: "pointer",
+            border: "2px solid grey",
+            borderRadius: "6px",
+            visibility: "visible",
+          },
+        });
+        setNodes(initialNodes);
+        if (firstTime) {
+          const shrinkEdge = {
+            id: `e-${index}-shrink`,
+            source: signoutIndex.toString(),
+            target: `${loginIndex}-shrink`,
+            animated: true,
+          };
+          addEdge(shrinkEdge);
+        }
+      }
+    });
+  };
+
+  const shrink = (loginIndex: number, signoutIndex: number, index: number) => {
+    const shrinkNodeIndex = initialNodes.findIndex(
+      (item) => item.id === loginIndex + "-shrink",
+    );
+    //delete shrink node
+    initialNodes.splice(shrinkNodeIndex, 1);
+    //delete expanded nodes
+    while (index >= 0) {
+      initialNodes.splice(
+        initialNodes.findIndex(
+          (item) => item.id === `session-${loginIndex}-${index}`,
+        ),
+        1,
+      );
+      index--;
+    }
+    const signoutNodeIndex = initialNodes.findIndex(
+      (item) => item.id === signoutIndex.toString(),
+    );
+    const loginNodeIndex = initialNodes.findIndex(
+      (item) => item.id === loginIndex.toString(),
+    );
+    //push expand node
+    initialNodes.push({
+      id: loginIndex + "-expand",
+      data: {
+        label: (
+          <div
+            className="w-full h-10 flex items-center justify-center"
+            onClick={() => expand(loginIndex, signoutIndex, false)}
+          >
+            <Handle
+              className="h-4 w-4 border-4 bg-white border-gray-400"
+              type="source"
+              position={Position.Right}
+            />
+            <Handle
+              className="h-4 w-4 border-4 bg-white border-gray-400"
+              type="target"
+              position={Position.Left}
+            />
+            <div>Expand</div>
+          </div>
+        ),
+      },
+      position: { x: 900, y: initialNodes[signoutNodeIndex].position.y + 15 },
+      sourcePosition: "right",
+      targetPosition: "left",
+      style: {
+        width: "100px",
+        height: "40px",
+        fontSize: "13px",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        cursor: "pointer",
+        border: "2px solid grey",
+        borderRadius: "6px",
+        visibility: "visible",
+      },
+    });
+    //change signout node position to it's default
+    initialNodes[signoutNodeIndex].position.x =
+      initialNodes[loginNodeIndex].position.x + 500;
+    setNodes(initialNodes);
+  };
+
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
+  useEffect(() => {
+    console.log(nodes);
+  }, [nodes]);
 
   const onNodesDelete = useCallback(
     (deleted) => {
@@ -317,7 +449,10 @@ function UserFlow() {
       onNodesDelete={onNodesDelete}
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
-    />
+    >
+      <Background color="grey" gap={16} />
+      <Controls />
+    </ReactFlow>
   );
 }
 

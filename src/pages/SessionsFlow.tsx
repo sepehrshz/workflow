@@ -1,7 +1,7 @@
 import { useState } from "react";
 import SessionNode from "../components/SessionNode";
 import UserNode from "../components/UserNode";
-import { ReactFlow } from "@xyflow/react";
+import { ReactFlow, Background, Controls } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import userSession from "../assets/sessions.json";
 
@@ -87,7 +87,12 @@ function SessionsFlow() {
   console.log(initialEdges);
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
-  return <ReactFlow nodes={nodes} edges={edges} />;
+  return (
+    <ReactFlow nodes={nodes} edges={edges}>
+      <Background color="grey" gap={16} />
+      <Controls />
+    </ReactFlow>
+  );
 }
 
 export default SessionsFlow;
