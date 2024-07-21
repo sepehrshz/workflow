@@ -92,7 +92,7 @@ function LogsFlow() {
         justifyContent: "center",
         alignItems: "center",
         cursor: "pointer",
-        border: "2px solid #cc33ff",
+        border: "2px solid #0ea5e9",
         borderRadius: "6px",
         visibility: "visible",
       },

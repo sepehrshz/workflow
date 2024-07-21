@@ -32,7 +32,7 @@ function SessionsFlow() {
       targetPosition: "right",
       style: {
         width: "200px",
-        height: "70px",
+        height: "60px",
         border: "2px solid gray",
         borderRadius: "6px",
         display: "flex",
@@ -63,7 +63,7 @@ function SessionsFlow() {
       targetPosition: "left",
       style: {
         width: "200px",
-        height: "70px",
+        height: "60px",
         fontSize: "13px",
         display: "flex",
         justifyContent: "center",

@@ -77,13 +77,14 @@ function UserFlow() {
     targetPosition: "right",
     style: {
       width: "200px",
-      height: "70px",
+      height: "60px",
       border: "2px solid gray",
       borderRadius: "6px",
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
       fontSize: "16px",
+      backgroundColor: "#f5f5f5",
     },
   });
   let loginCount =
@@ -103,15 +104,16 @@ function UserFlow() {
         targetPosition: "left",
         style: {
           width: "200px",
-          height: "70px",
+          height: "60px",
           fontSize: "13px",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
           cursor: "pointer",
-          border: "2px solid #cc33ff",
+          border: "2px solid #0ea5e9",
           borderRadius: "6px",
           visibility: "visible",
+          backgroundColor: "#ecfeff",
         },
       });
       loginCount++;
@@ -133,12 +135,12 @@ function UserFlow() {
               onClick={() => expand(loginIndex, index, true)}
             >
               <Handle
-                className="h-4 w-4 border-4 bg-white border-gray-400"
+                className="h-3 w-3 border-4 bg-white border-gray-400"
                 type="source"
                 position={Position.Right}
               />
               <Handle
-                className="h-4 w-4 border-4 bg-white border-gray-400"
+                className="h-3 w-3 border-4 bg-white border-gray-400"
                 type="target"
                 position={Position.Left}
               />
@@ -146,12 +148,12 @@ function UserFlow() {
             </div>
           ),
         },
-        position: { x: 900, y: (loginCount - 1) * 205 + 15 + centerY },
+        position: { x: 900, y: (loginCount - 1) * 205 + 12.5 + centerY },
         sourcePosition: "right",
         targetPosition: "left",
         style: {
           width: "100px",
-          height: "40px",
+          height: "35px",
           fontSize: "13px",
           display: "flex",
           justifyContent: "center",
@@ -170,15 +172,16 @@ function UserFlow() {
         targetPosition: "left",
         style: {
           width: "200px",
-          height: "70px",
+          height: "60px",
           fontSize: "13px",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
           cursor: "pointer",
-          border: "2px solid #cc33ff",
+          border: "2px solid #0ea5e9",
           borderRadius: "6px",
           visibility: "visible",
+          backgroundColor: "#ecfeff",
         },
       });
       initialEdges.push({
@@ -247,7 +250,7 @@ function UserFlow() {
         targetPosition: "left",
         style: {
           width: "200px",
-          height: "70px",
+          height: "60px",
           fontSize: "13px",
           display: "flex",
           justifyContent: "center",
@@ -256,6 +259,7 @@ function UserFlow() {
           border: "2px solid #cc33ff",
           borderRadius: "6px",
           visibility: "visible",
+          backgroundColor: "#fff1fe",
         },
       });
       setNodes(initialNodes);
@@ -301,7 +305,7 @@ function UserFlow() {
                 onClick={() => shrink(loginIndex, signoutIndex, index)}
               >
                 <Handle
-                  className="h-4 w-4 border-4 bg-white border-gray-400"
+                  className="h-3 w-3 border-4 bg-white border-gray-400"
                   type="target"
                   position={Position.Left}
                 />
@@ -311,9 +315,10 @@ function UserFlow() {
           },
           position: {
             x: signoutNode!.position.x + 300,
-            y: signoutNode!.position.y + 15,
+            y: signoutNode!.position.y + 10,
           },
           targetPosition: "left",
+          type: "output",
           style: {
             width: "100px",
             height: "40px",

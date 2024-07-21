@@ -9,7 +9,7 @@ const UserNode = ({ userName }) => {
         type="source"
         position={Position.Right}
       />
-      <div className="border w-12 h-12 border-gray-400 mr-1 flex justify-center items-center rounded-md p-1">
+      <div className="border w-10 h-10 border-gray-400 mr-1 flex justify-center items-center rounded-md p-1">
         <img className="h-3/4 w-3/4" src={profile} />
       </div>
       <div className="mr-2 w-3/4">{userName}</div>
