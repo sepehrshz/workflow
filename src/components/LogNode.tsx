@@ -2,9 +2,12 @@ import { useState } from "react";
 import { Handle, Position } from "@xyflow/react";
 import profile from "../assets/profile.png";
 import arrow from "../assets/arrow.png";
-const LogNode = ({ userLog }) => {
+import { useNavigate } from "react-router-dom";
+import { Log } from "../types/log";
+const LogNode = ({ userLog }: { userLog: Log }) => {
   const [click, setClick] = useState(false);
   const date = new Date(userLog.createdTime);
+  const navigate = useNavigate();
 
   const options = {
     year: "numeric",
@@ -15,18 +18,23 @@ const LogNode = ({ userLog }) => {
     hour12: false,
   };
   const formattedDate = date.toLocaleString("en-US", options);
+  const navigateToUser = (userLog: Log) => {
+    navigate(`/user/${userLog.userName}`, {
+      state: { message: userLog.createdTime },
+    });
+  };
   return (
     <div
       className="flex items-center w-full px-1"
       onClick={() => setClick((prevClick) => !prevClick)}
     >
       <Handle
-        className="h-4 w-4 border-4 bg-white border-[#0ea5e9]"
+        className="h-3 w-3 border-[3px] bg-white border-[#0ea5e9]"
         type="source"
         position={Position.Right}
       />
       <Handle
-        className="h-4 w-4 border-4 bg-white border-[#03a5e9]"
+        className="h-3 w-3 border-[3px] bg-white border-[#03a5e9]"
         type="target"
         position={Position.Left}
       />
@@ -50,11 +58,17 @@ const LogNode = ({ userLog }) => {
         className={
           click
             ? "border-2 bg-white rounded-md p-4 shadow-lg border-slate-400 absolute w-full left-0 top-full mt-2 transition-all duration-500"
-            : "border-2 bg-white rounded-md p-4 shadow-lg border-slate-400 absolute w-full left-0 top-full mt-2 -translate-y-10 opacity-0 transition-all duration-500"
+            : "border-2 bg-white rounded-md p-4 shadow-lg border-slate-400 absolute w-full left-0 top-full mt-2 -translate-y-10 opacity-0 invisible transition-all duration-500"
         }
       >
         <div>IP: {userLog.clientIp}</div>
         <div className="mt-1">🕓{formattedDate}</div>
+        <button
+          onClick={() => navigateToUser(userLog)}
+          className="absolute flex justify-center items-center h-5 w-5 p-1 top-1 right-1 bg-gray-300 rounded-[4px]"
+        >
+          ...
+        </button>
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ const UserNode = ({ userName }) => {
   return (
     <div className="flex items-center w-full">
       <Handle
-        className="h-4 w-4 border-4 bg-white border-gray-500"
+        className="h-3 w-3 border-[3px] bg-white border-gray-500"
         type="source"
         position={Position.Right}
       />

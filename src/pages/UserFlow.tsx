@@ -13,7 +13,7 @@ import {
 import "@xyflow/react/dist/style.css";
 import userLogs from "../assets/userLogs.json";
 import userSession from "../assets/sessions.json";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { ReactElement, useCallback, useEffect } from "react";
 import UserNode from "../components/UserNode";
 import LogNode from "../components/LogNode";
@@ -21,6 +21,7 @@ import SessionNode from "../components/SessionNode";
 
 function UserFlow() {
   const { id } = useParams();
+  const location = useLocation();
 
   interface Node {
     id: string;
@@ -135,12 +136,12 @@ function UserFlow() {
               onClick={() => expand(loginIndex, index, true)}
             >
               <Handle
-                className="h-3 w-3 border-4 bg-white border-gray-400"
+                className="h-3 w-3 border-[3px] bg-white border-gray-400"
                 type="source"
                 position={Position.Right}
               />
               <Handle
-                className="h-3 w-3 border-4 bg-white border-gray-400"
+                className="h-3 w-3 border-[3px] bg-white border-gray-400"
                 type="target"
                 position={Position.Left}
               />
@@ -305,7 +306,7 @@ function UserFlow() {
                 onClick={() => shrink(loginIndex, signoutIndex, index)}
               >
                 <Handle
-                  className="h-3 w-3 border-4 bg-white border-gray-400"
+                  className="h-3 w-3 border-[3px] bg-white border-gray-400"
                   type="target"
                   position={Position.Left}
                 />
@@ -378,12 +379,12 @@ function UserFlow() {
             onClick={() => expand(loginIndex, signoutIndex, false)}
           >
             <Handle
-              className="h-4 w-4 border-4 bg-white border-gray-400"
+              className="h-3 w-3 border-[3px] bg-white border-gray-400"
               type="source"
               position={Position.Right}
             />
             <Handle
-              className="h-4 w-4 border-4 bg-white border-gray-400"
+              className="h-3 w-3 border-[3px] bg-white border-gray-400"
               type="target"
               position={Position.Left}
             />
@@ -391,7 +392,7 @@ function UserFlow() {
           </div>
         ),
       },
-      position: { x: 900, y: initialNodes[signoutNodeIndex].position.y + 15 },
+      position: { x: 900, y: initialNodes[signoutNodeIndex].position.y + 10 },
       sourcePosition: "right",
       targetPosition: "left",
       style: {
@@ -415,10 +416,6 @@ function UserFlow() {
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-
-  useEffect(() => {
-    console.log(nodes);
-  }, [nodes]);
 
   const onNodesDelete = useCallback(
     (deleted) => {
@@ -447,6 +444,35 @@ function UserFlow() {
     [nodes, edges, setEdges],
   );
 
+  useEffect(() => {
+    if (location.state) {
+      const sortLog = filteredLog.sort(
+        (a, b) => new Date(a.createdTime) - new Date(b.createdTime),
+      );
+      const signoutIndex = sortLog.findIndex(
+        (item) => item.createdTime > location.state.message,
+      );
+      const loginIndex = signoutIndex - 1;
+      const filteredSessionTime = filteredSession.filter(
+        (item) =>
+          new Date(item.createdTime) >
+            new Date(filteredLog[loginIndex].createdTime) &&
+          new Date(item.createdTime) <
+            new Date(filteredLog[signoutIndex].createdTime),
+      );
+      const sessionIndex = filteredSessionTime.findIndex(
+        (item) => item.createdTime === location.state.message,
+      );
+      expand(loginIndex, signoutIndex, true);
+      setNodes((nds) =>
+        nds.map((node) =>
+          node.id === `session-${loginIndex}-${sessionIndex}`
+            ? { ...node, style: { ...node.style, backgroundColor: "red" } }
+            : node,
+        ),
+      );
+    }
+  }, []);
   return (
     <ReactFlow
       nodes={nodes}

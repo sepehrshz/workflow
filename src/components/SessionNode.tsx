@@ -2,7 +2,10 @@ import { useState } from "react";
 import { Handle, Position } from "@xyflow/react";
 import profile from "../assets/profile.png";
 import arrow from "../assets/arrow.png";
-const SessionNode = ({ userSession }) => {
+import { useNavigate } from "react-router-dom";
+import { Session } from "../types/session";
+const SessionNode = ({ userSession }: { userSession: Session }) => {
+  const navigate = useNavigate();
   const [click, setClick] = useState(false);
   const date = new Date(userSession.createdTime);
 
@@ -15,18 +18,23 @@ const SessionNode = ({ userSession }) => {
     hour12: false,
   };
   const formattedDate = date.toLocaleString("en-US", options);
+  const navigateToUser = (userSession: Session) => {
+    navigate(`/user/${userSession.userName}`, {
+      state: { message: userSession.createdTime },
+    });
+  };
   return (
     <div
       className="flex items-center w-full px-1"
       onClick={() => setClick((prevClick) => !prevClick)}
     >
       <Handle
-        className="h-4 w-4 border-4 bg-white border-[#cc33ff]"
+        className="h-3 w-3 border-[3px] bg-white border-[#cc33ff]"
         type="source"
         position={Position.Right}
       />
       <Handle
-        className="h-4 w-4 border-4 bg-white border-[#cc33ff]"
+        className="h-3 w-3 border-[3px] bg-white border-[#cc33ff]"
         type="target"
         position={Position.Left}
       />
@@ -55,6 +63,12 @@ const SessionNode = ({ userSession }) => {
       >
         <div>Duration: {userSession.duration}</div>
         <div className="mt-1">🕓{formattedDate}</div>
+        <button
+          onClick={() => navigateToUser(userSession)}
+          className="absolute flex justify-center items-center h-5 w-5 p-1 top-1 right-1 bg-gray-300 rounded-[4px]"
+        >
+          ...
+        </button>
       </div>
     </div>
   );
