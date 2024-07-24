@@ -1,19 +1,17 @@
 import { ReactNode, useEffect, useState } from "react";
-import {
-  Link,
-  Navigate,
-  Location,
-  useNavigate,
-  useLocation,
-} from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 function Navigator({ children }: { children: ReactNode }) {
   const [active, setActive] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
   useEffect(() => {
     if (location.pathname.split("/")[1] === "user") setActive("");
-  }, [location.pathname]);
-  const changeActive = (arg) => {
+    else if (location.pathname.split("/")[1] === "logs") setActive("logs");
+    else if (location.pathname.split("/")[1] === "sessions")
+      setActive("sessions");
+    setActive("sesssions");
+  }, []);
+  const changeActive = (arg: string) => {
     setActive(arg);
     navigate(`/${arg}`, { replace: true });
   };
@@ -23,18 +21,16 @@ function Navigator({ children }: { children: ReactNode }) {
         <button
           onClick={() => changeActive("logs")}
           type="button"
-          className={`relative -ml-px rounded-l-md border border-gray-300 bg-white w-20 flex justify-center items-center py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${
-            active !== "logs" ? "" : "bg-gray-100"
-          }`}
+          className={`relative -ml-px rounded-l-md border border-gray-300 w-20 flex justify-center items-center py-2 text-sm font-medium text-gray-700
+            ${active === "logs" ? "bg-gray-100" : "bg-white hover:bg-gray-50"}`}
         >
           Logs
         </button>
         <button
           onClick={() => changeActive("sessions")}
           type="button"
-          className={`relative -ml-px rounded-r-md border border-gray-300 bg-white w-20 flex justify-center items-center py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${
-            active !== "sessions" ? "" : "bg-gray-100"
-          }`}
+          className={`relative -ml-px rounded-r-md border border-gray-300 w-20 flex justify-center items-center py-2 text-sm font-medium text-gray-700 
+            ${active === "sessions" ? "bg-gray-100" : "bg-white hover:bg-gray-50"}`}
         >
           Sessions
         </button>

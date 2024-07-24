@@ -12,7 +12,7 @@ function App() {
         <Route
           path="/"
           element={
-            <div style={{ height: "100vh", width: "100%" }}>
+            <div className="h-[100vh] w-full">
               <Navigator>
                 <Landing />
               </Navigator>
@@ -22,7 +22,7 @@ function App() {
         <Route
           path="/logs"
           element={
-            <div style={{ height: "100vh", width: "100%" }}>
+            <div className="h-[100vh] w-full">
               <Navigator>
                 <LogsFlow />
               </Navigator>
@@ -32,7 +32,7 @@ function App() {
         <Route
           path="/sessions"
           element={
-            <div style={{ height: "100vh", width: "100%" }}>
+            <div className="h-[100vh] w-full">
               <Navigator>
                 <SessionsFlow />
               </Navigator>

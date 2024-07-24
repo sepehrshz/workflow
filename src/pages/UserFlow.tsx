@@ -14,11 +14,19 @@ import "@xyflow/react/dist/style.css";
 import userLogs from "../assets/userLogs.json";
 import userSession from "../assets/sessions.json";
 import { useParams, useLocation } from "react-router-dom";
-import { ReactElement, useCallback, useEffect } from "react";
+import { ReactElement, useCallback, useEffect, useState } from "react";
 import UserNode from "../components/UserNode";
 import LogNode from "../components/LogNode";
 import SessionNode from "../components/SessionNode";
 
+userLogs.sort(
+  (a, b) =>
+    new Date(a.createdTime).getTime() - new Date(b.createdTime).getTime(),
+);
+userSession.sort(
+  (a, b) =>
+    new Date(a.createdTime).getTime() - new Date(b.createdTime).getTime(),
+);
 function UserFlow() {
   const { id } = useParams();
   const location = useLocation();
@@ -44,25 +52,8 @@ function UserFlow() {
     setEdges((prev) => [...prev, newEdge]);
   };
 
-  //   const deleteEdge = (index: number) => {
-  //     // const newEdges = edges.filter((edge: Edge) => edge.id !== id);
-  //     edges.splice(index, 1);
-  //     console.log(edges);
-  //     setEdges(edges);
-  //     console.log(edges);
-  //   };
-
   const initialNodes: Node[] = [];
   const initialEdges: Edge[] = [];
-
-  userLogs.sort(
-    (a, b) =>
-      new Date(a.createdTime).getTime() - new Date(b.createdTime).getTime(),
-  );
-  userSession.sort(
-    (a, b) =>
-      new Date(a.createdTime).getTime() - new Date(b.createdTime).getTime(),
-  );
 
   const filteredLog = userLogs.filter((item) => item.userName === id);
   const filteredSession = userSession.filter((item) => item.userName === id);
@@ -73,7 +64,7 @@ function UserFlow() {
   initialNodes.push({
     id: id!,
     data: { label: <UserNode userName={id} /> },
-    position: { x: 100, y: centerY },
+    position: { x: 50, y: centerY },
     type: "output",
     targetPosition: "right",
     style: {
@@ -100,7 +91,7 @@ function UserFlow() {
       initialNodes.push({
         id: index.toString(),
         data: { label: <LogNode userLog={filteredLog[index]} /> },
-        position: { x: 400, y: loginCount * 205 + centerY },
+        position: { x: 350, y: loginCount * 205 + centerY },
         sourcePosition: "right",
         targetPosition: "left",
         style: {
@@ -149,7 +140,7 @@ function UserFlow() {
             </div>
           ),
         },
-        position: { x: 650, y: (loginCount - 1) * 205 + 12.5 + centerY },
+        position: { x: 600, y: (loginCount - 1) * 205 + 12.5 + centerY },
         sourcePosition: "right",
         targetPosition: "left",
         style: {
@@ -168,7 +159,7 @@ function UserFlow() {
       initialNodes.push({
         id: index.toString(),
         data: { label: <LogNode userLog={filteredLog[index]} /> },
-        position: { x: 800, y: (loginCount - 1) * 205 + centerY },
+        position: { x: 750, y: (loginCount - 1) * 205 + centerY },
         sourcePosition: "right",
         targetPosition: "left",
         style: {
@@ -221,14 +212,6 @@ function UserFlow() {
           new Date(filteredLog[signoutIndex].createdTime),
     );
 
-    // const expandEdgeIndex = edges.findIndex(
-    //   (item) => item.id === "e-" + loginIndex + "-expand",
-    // );
-
-    // const edgeToDelete = edges.findIndex(
-    //   (item) => item.source === loginIndex + "-expand",
-    // );
-
     const loginNode = initialNodes.find(
       (item) => item.id == loginIndex.toString(),
     );
@@ -249,7 +232,7 @@ function UserFlow() {
             ),
           },
           position: {
-            x: loginNode!.position.x + (index + 1) * 300 - 100,
+            x: loginNode!.position.x + (index + 1) * 250 - 100,
             y: loginNode!.position.y,
           },
           sourcePosition: "right",
@@ -299,10 +282,10 @@ function UserFlow() {
         const signoutNode = initialNodes.find(
           (item) => item.id == signoutIndex.toString(),
         );
-        signoutNode!.position.x = loginNode!.position.x + (index + 2) * 300;
+        signoutNode!.position.x = loginNode!.position.x + (index + 2) * 250;
         if (firstTime) {
           const signoutEdge = {
-            id: `e-session-${index}-${signoutIndex}`,
+            id: `e-session-${index}-signout${loginIndex}`,
             source: `session-${loginIndex}-${index}`,
             target: signoutIndex.toString(),
             animated: true,
@@ -328,7 +311,7 @@ function UserFlow() {
             ),
           },
           position: {
-            x: signoutNode!.position.x + 100,
+            x: signoutNode!.position.x + 50 - index * 200,
             y: signoutNode!.position.y + 10,
           },
           targetPosition: "left",
@@ -348,12 +331,10 @@ function UserFlow() {
             opacity: 0,
           },
         });
-        console.log(initialNodes[initialNodes.length - 1]);
-        console.log(signoutNode?.position.x);
         setNodes(initialNodes);
         if (firstTime) {
           const shrinkEdge = {
-            id: `e-${index}-shrink`,
+            id: `e-${loginIndex}-shrink`,
             source: signoutIndex.toString(),
             target: `${loginIndex}-shrink`,
             animated: true,
@@ -432,7 +413,7 @@ function UserFlow() {
       initialNodes[loginNodeIndex].position.x + 400;
     setNodes(initialNodes);
     setTimeout(() => {
-      initialNodes[initialNodes.length - 1].position.x -= 100;
+      initialNodes[initialNodes.length - 1].position.x -= 150;
       initialNodes[initialNodes.length - 1].style!.opacity = 1;
       setNodes(initialNodes);
     }, 10);
@@ -480,9 +461,9 @@ function UserFlow() {
       const filteredSessionTime = filteredSession.filter(
         (item) =>
           new Date(item.createdTime) >
-            new Date(filteredLog[loginIndex].createdTime) &&
+            new Date(sortLog[loginIndex].createdTime) &&
           new Date(item.createdTime) <
-            new Date(filteredLog[signoutIndex].createdTime),
+            new Date(sortLog[signoutIndex].createdTime),
       );
       const sessionIndex = filteredSessionTime.findIndex(
         (item) => item.createdTime === location.state.message,
@@ -495,8 +476,7 @@ function UserFlow() {
                 ...node,
                 style: {
                   ...node.style,
-                  borderWidth: "3px",
-                  borderStyle: "dashed",
+                  border: "3px dashed",
                 },
               }
             : node,
