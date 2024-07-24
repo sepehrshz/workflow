@@ -100,7 +100,7 @@ function UserFlow() {
       initialNodes.push({
         id: index.toString(),
         data: { label: <LogNode userLog={filteredLog[index]} /> },
-        position: { x: 600, y: loginCount * 205 + centerY },
+        position: { x: 400, y: loginCount * 205 + centerY },
         sourcePosition: "right",
         targetPosition: "left",
         style: {
@@ -149,7 +149,7 @@ function UserFlow() {
             </div>
           ),
         },
-        position: { x: 900, y: (loginCount - 1) * 205 + 12.5 + centerY },
+        position: { x: 650, y: (loginCount - 1) * 205 + 12.5 + centerY },
         sourcePosition: "right",
         targetPosition: "left",
         style: {
@@ -168,7 +168,7 @@ function UserFlow() {
       initialNodes.push({
         id: index.toString(),
         data: { label: <LogNode userLog={filteredLog[index]} /> },
-        position: { x: 1100, y: (loginCount - 1) * 205 + centerY },
+        position: { x: 800, y: (loginCount - 1) * 205 + centerY },
         sourcePosition: "right",
         targetPosition: "left",
         style: {
@@ -183,6 +183,7 @@ function UserFlow() {
           borderRadius: "6px",
           visibility: "visible",
           backgroundColor: "#ecfeff",
+          transition: "all 1s ease",
         },
       });
       initialEdges.push({
@@ -232,39 +233,51 @@ function UserFlow() {
       (item) => item.id == loginIndex.toString(),
     );
     filteredSessionTime.forEach((session, index) => {
-      initialNodes.push({
-        id: `session-${loginIndex}-${index}`,
-        type: "custom",
-        data: {
-          label: (
-            <SessionNode
-              key={`session-${loginIndex}-${index}`}
-              userSession={filteredSessionTime[index]}
-            />
-          ),
-        },
-        position: {
-          x: loginNode!.position.x + (index + 1) * 300,
-          y: loginNode!.position.y,
-        },
-        sourcePosition: "right",
-        targetPosition: "left",
-        style: {
-          width: "200px",
-          height: "60px",
-          fontSize: "13px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          cursor: "pointer",
-          border: "2px solid #cc33ff",
-          borderRadius: "6px",
-          visibility: "visible",
-          backgroundColor: "#fff1fe",
-        },
-      });
-      setNodes(initialNodes);
-
+      const sessionNodeId = `session-${loginIndex}-${index}`;
+      //check if it is duplicate node
+      if (!initialNodes.some((node) => node.id === sessionNodeId)) {
+        //add session nodes
+        initialNodes.push({
+          id: `session-${loginIndex}-${index}`,
+          type: "default",
+          data: {
+            label: (
+              <SessionNode
+                key={`session-${loginIndex}-${index}`}
+                userSession={filteredSessionTime[index]}
+              />
+            ),
+          },
+          position: {
+            x: loginNode!.position.x + (index + 1) * 300 - 100,
+            y: loginNode!.position.y,
+          },
+          sourcePosition: "right",
+          targetPosition: "left",
+          style: {
+            width: "200px",
+            height: "60px",
+            fontSize: "13px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            cursor: "pointer",
+            border: "2px solid #cc33ff",
+            borderRadius: "6px",
+            visibility: "visible",
+            backgroundColor: "#fff1fe",
+            transition: "all 1s ease",
+          },
+        });
+        setNodes(initialNodes);
+        setTimeout(() => {
+          initialNodes[initialNodes.length - 1].position.x += 200;
+          initialNodes[initialNodes.length - 1].style!.opacity = 1;
+          initialNodes.find((item) => item.id === sessionNodeId)!.position.x +=
+            100;
+          setNodes(initialNodes);
+        }, 10);
+      }
       if (index === 0 && firstTime) {
         const newEdge = {
           id: `e-session-login[${loginIndex}]-${index}`,
@@ -315,7 +328,7 @@ function UserFlow() {
             ),
           },
           position: {
-            x: signoutNode!.position.x + 300,
+            x: signoutNode!.position.x + 100,
             y: signoutNode!.position.y + 10,
           },
           targetPosition: "left",
@@ -331,8 +344,12 @@ function UserFlow() {
             border: "2px solid grey",
             borderRadius: "6px",
             visibility: "visible",
+            transition: "all 1s ease",
+            opacity: 0,
           },
         });
+        console.log(initialNodes[initialNodes.length - 1]);
+        console.log(signoutNode?.position.x);
         setNodes(initialNodes);
         if (firstTime) {
           const shrinkEdge = {
@@ -392,7 +409,7 @@ function UserFlow() {
           </div>
         ),
       },
-      position: { x: 900, y: initialNodes[signoutNodeIndex].position.y + 10 },
+      position: { x: 750, y: initialNodes[signoutNodeIndex].position.y + 10 },
       sourcePosition: "right",
       targetPosition: "left",
       style: {
@@ -406,12 +423,19 @@ function UserFlow() {
         border: "2px solid grey",
         borderRadius: "6px",
         visibility: "visible",
+        opacity: 0,
+        transition: "all 1s ease",
       },
     });
     //change signout node position to it's default
     initialNodes[signoutNodeIndex].position.x =
-      initialNodes[loginNodeIndex].position.x + 500;
+      initialNodes[loginNodeIndex].position.x + 400;
     setNodes(initialNodes);
+    setTimeout(() => {
+      initialNodes[initialNodes.length - 1].position.x -= 100;
+      initialNodes[initialNodes.length - 1].style!.opacity = 1;
+      setNodes(initialNodes);
+    }, 10);
   };
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -443,7 +467,7 @@ function UserFlow() {
     },
     [nodes, edges, setEdges],
   );
-
+  //get route message if exist
   useEffect(() => {
     if (location.state) {
       const sortLog = filteredLog.sort(
@@ -467,7 +491,14 @@ function UserFlow() {
       setNodes((nds) =>
         nds.map((node) =>
           node.id === `session-${loginIndex}-${sessionIndex}`
-            ? { ...node, style: { ...node.style, backgroundColor: "red" } }
+            ? {
+                ...node,
+                style: {
+                  ...node.style,
+                  borderWidth: "3px",
+                  borderStyle: "dashed",
+                },
+              }
             : node,
         ),
       );

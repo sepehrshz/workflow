@@ -3,6 +3,7 @@ import SessionNode from "../components/SessionNode";
 import UserNode from "../components/UserNode";
 import { ReactFlow, Background, Controls } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import { Link } from "react-router-dom";
 import userSession from "../assets/sessions.json";
 
 function SessionsFlow() {
@@ -24,8 +25,17 @@ function SessionsFlow() {
   userNames.forEach((user, index) => {
     initialNodes.push({
       id: user,
-      data: { label: <UserNode userName={user} /> },
-      position: { x: 300, y: (index + 1) * 205 },
+      data: {
+        label: (
+          <Link
+            className="w-full h-full flex justify-center items-center"
+            to={`../user/${user}`}
+          >
+            <UserNode userName={user} />
+          </Link>
+        ),
+      },
+      position: { x: 100, y: (index + 1) * 150 },
       count: 0,
       lastIndex: 1,
       type: "output",
@@ -39,6 +49,7 @@ function SessionsFlow() {
         justifyContent: "center",
         alignItems: "center",
         fontSize: "16px",
+        backgroundColor: "#f5f5f5",
       },
     });
     initialEdges.push({
@@ -56,9 +67,9 @@ function SessionsFlow() {
     const positionY = user.position.y;
     initialNodes.push({
       id: user.id + user.count,
-      type: "custom",
+      type: "default",
       data: { label: <SessionNode userSession={userSession[index]} /> },
-      position: { y: positionY, x: (user.count + 1) * 300 },
+      position: { y: positionY, x: user.count * 300 + 100 },
       sourcePosition: "right",
       targetPosition: "left",
       style: {
@@ -72,6 +83,7 @@ function SessionsFlow() {
         border: "2px solid #cc33ff",
         borderRadius: "6px",
         visibility: "visible",
+        backgroundColor: "#fff1fe",
       },
     });
     if (index + 1 !== userSession.length) {

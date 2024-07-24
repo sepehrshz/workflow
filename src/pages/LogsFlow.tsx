@@ -36,25 +36,26 @@ function LogsFlow() {
         label: (
           <Link
             className="w-full h-full flex justify-center items-center"
-            to={`./user/${user}`}
+            to={`../user/${user}`}
           >
             <UserNode userName={user} />
           </Link>
         ),
       },
-      position: { x: 300, y: (index + 1) * 205 },
+      position: { x: 300, y: (index + 1) * 150 },
       count: 0,
       type: "output",
       targetPosition: "right",
       style: {
         width: "200px",
-        height: "70px",
+        height: "60px",
         border: "2px solid gray",
         borderRadius: "6px",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         fontSize: "16px",
+        backgroundColor: "#f5f5f5",
       },
     });
     selectedLogs.push(lastLogin, lastLogout);
@@ -79,14 +80,14 @@ function LogsFlow() {
     const positionY = user.position.y;
     initialNodes.push({
       id: user.id + user.count,
-      type: "custom",
+      type: "default",
       data: { label: <Node userLog={selectedLogs[index]} /> },
       position: { y: positionY, x: (user.count + 1) * 300 },
       sourcePosition: "right",
       targetPosition: "left",
       style: {
         width: "200px",
-        height: "70px",
+        height: "60px",
         fontSize: "13px",
         display: "flex",
         justifyContent: "center",
@@ -95,6 +96,7 @@ function LogsFlow() {
         border: "2px solid #0ea5e9",
         borderRadius: "6px",
         visibility: "visible",
+        backgroundColor: "#ecfeff",
       },
     });
   });
