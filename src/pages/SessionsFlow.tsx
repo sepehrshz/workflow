@@ -65,55 +65,11 @@ function SessionsFlow() {
       animated: true,
     });
   });
-  let prevUser = "";
-  //add logs node
+  //add logs nodes
   userSession.forEach((log, index) => {
     const user = initialNodes.find((item) => item.id == log.userName);
-    if (user) prevUser = user;
     if (user.count < 4) {
       const positionY = user.position.y;
-      if (user.count === 0) {
-        initialNodes.push({
-          id: prevUser.id + "-expand",
-          type: "input",
-          data: {
-            label: (
-              <div
-                className="w-full h-10 flex items-center justify-center"
-                // onClick={() => expand(loginIndex, index, true)}
-              >
-                <Handle
-                  className="h-3 w-3 border-[3px] bg-white border-gray-400"
-                  type="target"
-                  position={Position.Left}
-                />
-                <div>Expand</div>
-              </div>
-            ),
-          },
-          position: { x: 1325, y: positionY + 12.5 },
-          sourcePosition: "right",
-          targetPosition: "left",
-          style: {
-            width: "100px",
-            height: "35px",
-            fontSize: "13px",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            cursor: "pointer",
-            border: "2px solid grey",
-            borderRadius: "6px",
-            visibility: "visible",
-          },
-        });
-        initialEdges.push({
-          id: `e-${prevUser.id}-expand`,
-          source: initialNodes[initialNodes.length - 2].id,
-          target: prevUser.id + "-expand",
-          animated: true,
-        });
-      }
       user.count++;
       initialNodes.push({
         id: user.id + user.count,
@@ -136,17 +92,65 @@ function SessionsFlow() {
           backgroundColor: "#fff1fe",
         },
       });
-      if (index + 1 !== userSession.length) {
-        initialEdges.push({
-          id: "e-" + user.id + "" + user.lastIndex + "-" + (user.lastIndex + 1),
-          source: user.id + user.lastIndex,
-          target: user.id + (user.lastIndex + 1),
-          animated: true,
-        });
+      if (index !== userSession.length - 1) {
+        if (user.lastIndex > 1) {
+          initialEdges.push({
+            id:
+              "e-" + user.id + "" + (user.lastIndex - 1) + "-" + user.lastIndex,
+            source: user.id + (user.lastIndex - 1),
+            target: user.id + user.lastIndex,
+            animated: true,
+          });
+        }
         user.lastIndex++;
       }
     }
   });
+  //add expand nodes
+  userNames.forEach((user) => {
+    const positionY = initialNodes.find((item) => item.id === user).position.y;
+    initialNodes.push({
+      id: user + "-expand",
+      type: "input",
+      data: {
+        label: (
+          <div
+            className="w-full h-10 flex items-center justify-center"
+            // onClick={() => expand(loginIndex, index, true)}
+          >
+            <Handle
+              className="h-3 w-3 border-[3px] bg-white border-gray-400"
+              type="target"
+              position={Position.Left}
+            />
+            <div>Expand</div>
+          </div>
+        ),
+      },
+      position: { x: 1325, y: positionY + 12.5 },
+      sourcePosition: "right",
+      targetPosition: "left",
+      style: {
+        width: "100px",
+        height: "35px",
+        fontSize: "13px",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        cursor: "pointer",
+        border: "2px solid grey",
+        borderRadius: "6px",
+        visibility: "visible",
+      },
+    });
+    initialEdges.push({
+      id: `e-${user}-expand`,
+      source: `${user}4`,
+      target: user + "-expand",
+      animated: true,
+    });
+  });
+
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
   return (
