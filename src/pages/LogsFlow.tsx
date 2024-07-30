@@ -1,15 +1,27 @@
-import { useState } from "react";
-import Node from "../components/LogNode";
+import { useState, useEffect } from "react";
+import { Node } from "../types/node";
+import { Edge } from "../types/edge";
 import UserNode from "../components/UserNode";
-import { ReactFlow, Background, MiniMap, Controls } from "@xyflow/react";
+import LogNode from "../components/LogNode";
+import { ReactFlow, Background, Controls } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import userLogs from "../assets/userLogs.json";
 import { Link } from "react-router-dom";
+import Pagination from "../layouts/Pagination";
+import { Log } from "../types/log";
 
+const visitedPageUser: number[] = [];
 function LogsFlow() {
-  const initialNodes = [],
-    initialEdges = [];
-  const selectedLogs = [];
+  const addEdge = (newEdge: Edge) => {
+    setEdges((prev) => [...prev, newEdge]);
+  };
+  const initialNodes: Node[] = [],
+    initialEdges: Edge[] = [];
+  const selectedLogs: Log[] = [];
+  const [startIndex, setStartIndex] = useState(0);
+  const handleChangePage = (index: number) => {
+    setStartIndex((index - 1) * 4);
+  };
 
   //sort logs by created time
   userLogs.sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime));
@@ -22,89 +34,130 @@ function LogsFlow() {
     return acc;
   }, []);
 
-  //add user nodes to initialNodes array
-  userNames.forEach((user, index) => {
-    const lastLogin = userLogs.find(
-      (log) => log.result === "login" && log.userName === user,
-    );
-    const lastLogout = userLogs.find(
-      (log) => log.result === "signout" && log.userName === user,
-    );
-    initialNodes.push({
-      id: user,
-      data: {
-        label: (
-          <Link
-            className="w-full h-full flex justify-center items-center"
-            to={`../user/${user}`}
-          >
-            <UserNode userName={user} />
-          </Link>
-        ),
-      },
-      position: { x: 300, y: (index + 1) * 150 },
-      count: 0,
-      type: "output",
-      targetPosition: "right",
-      style: {
-        width: "200px",
-        height: "60px",
-        border: "2px solid gray",
-        borderRadius: "6px",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        fontSize: "16px",
-        backgroundColor: "#f5f5f5",
-      },
+  //add nodes base on startIndex
+  useEffect(() => {
+    initialNodes.splice(0, initialNodes.length);
+    setNodes(initialNodes);
+    userNames.forEach((user, index) => {
+      if (index <= startIndex + 3 && index >= startIndex) {
+        const lastLogin = userLogs.find(
+          (log) => log.result === "login" && log.userName === user,
+        );
+        const lastLogout = userLogs.find(
+          (log) => log.result === "signout" && log.userName === user,
+        );
+        //add user nodes
+        initialNodes.push({
+          id: user,
+          data: {
+            label: (
+              <Link
+                className="w-full h-full flex justify-center items-center"
+                to={`../user/${user}`}
+              >
+                <UserNode userName={user} />
+              </Link>
+            ),
+          },
+          position: { x: 330, y: ((index % 4) + 1) * 150 - 50 },
+          count: 0,
+          type: "output",
+          targetPosition: "right",
+          style: {
+            width: "200px",
+            height: "60px",
+            border: "2px solid gray",
+            borderRadius: "6px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            fontSize: "16px",
+            backgroundColor: "#f5f5f5",
+          },
+        });
+        if (
+          !selectedLogs.some(
+            (log) =>
+              log.createdTime === lastLogin?.createdTime ||
+              log.createdTime === lastLogout?.createdTime,
+          )
+        ) {
+          selectedLogs.push(lastLogin, lastLogout);
+        }
+        // if (!initialEdges.some((node) => node.id === user + "1")) {
+        if (!visitedPageUser.includes(user)) {
+          console.log(visitedPageUser);
+          addEdge({
+            id: user + "1",
+            source: user,
+            target: user + "1",
+            animated: true,
+          });
+          visitedPageUser.push(user);
+          // initialEdges.push({
+          //   id: user + "1",
+          //   source: user,
+          //   target: user + "1",
+          //   animated: true,
+          // });
+          // }
+          // if (!initialEdges.some((node) => node.id === user + "1-2")) {
+          addEdge({
+            id: user + "1-2",
+            source: user + "1",
+            target: user + "2",
+            animated: true,
+          });
+        }
+        // initialEdges.push({
+        //   id: user + "1-2",
+        //   source: user + "1",
+        //   target: user + "2",
+        //   animated: true,
+        // });
+        // }
+      }
     });
-    selectedLogs.push(lastLogin, lastLogout);
-    initialEdges.push({
-      id: user + "1",
-      source: user,
-      target: user + "1",
-      animated: true,
-    });
-    initialEdges.push({
-      id: user + "e1-2",
-      source: user + "1",
-      target: user + "2",
-      animated: true,
-    });
-  });
+    setNodes(initialNodes);
 
-  //add logs node
-  selectedLogs.forEach((log, index) => {
-    const user = initialNodes.find((item) => item.id == log.userName);
-    user.count++;
-    const positionY = user.position.y;
-    initialNodes.push({
-      id: user.id + user.count,
-      type: "default",
-      data: { label: <Node userLog={selectedLogs[index]} /> },
-      position: { y: positionY, x: (user.count + 1) * 300 },
-      sourcePosition: "right",
-      targetPosition: "left",
-      style: {
-        width: "200px",
-        height: "60px",
-        fontSize: "13px",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        cursor: "pointer",
-        border: "2px solid #0ea5e9",
-        borderRadius: "6px",
-        visibility: "visible",
-        backgroundColor: "#ecfeff",
-      },
+    //add logs node
+    selectedLogs.forEach((log, index) => {
+      const user = initialNodes.find((item) => item.id == log.userName);
+      user.count++;
+      const positionY = user.position.y;
+      initialNodes.push({
+        id: user.id + user.count,
+        type: "default",
+        data: { label: <LogNode userLog={selectedLogs[index]} /> },
+        position: { y: positionY, x: (user.count + 1) * 330 },
+        sourcePosition: "right",
+        targetPosition: "left",
+        style: {
+          width: "200px",
+          height: "60px",
+          fontSize: "13px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          cursor: "pointer",
+          border: "2px solid #0ea5e9",
+          borderRadius: "6px",
+          visibility: "visible",
+          backgroundColor: "#ecfeff",
+        },
+      });
+      setNodes(initialNodes);
     });
-  });
+  }, [startIndex]);
 
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
   return (
     <ReactFlow nodes={nodes} edges={edges}>
+      <Pagination
+        onChangePage={handleChangePage}
+        userNumber={userNames.length}
+      />
       <Background color="grey" gap={16} />
       <Controls />
     </ReactFlow>
