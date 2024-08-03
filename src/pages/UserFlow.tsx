@@ -14,10 +14,13 @@ import "@xyflow/react/dist/style.css";
 import userLogs from "../assets/userLogs.json";
 import userSession from "../assets/sessions.json";
 import { useParams, useLocation } from "react-router-dom";
-import { ReactElement, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import UserNode from "../components/UserNode";
 import LogNode from "../components/LogNode";
 import SessionNode from "../components/SessionNode";
+import { Node } from "../types/node";
+import { Edge } from "../types/edge";
+import Pagination from "../layouts/Pagination";
 
 userLogs.sort(
   (a, b) =>
@@ -31,25 +34,15 @@ function UserFlow() {
   const { id } = useParams();
   const location = useLocation();
 
-  interface Node {
-    id: string;
-    type?: string;
-    data: { label: ReactElement };
-    position: { x: number; y: number };
-    targetPosition?: string;
-    sourcePosition?: string;
-    style?: { [key: string]: string | number };
-  }
-  interface Edge {
-    type?: "smoothstep";
-    id: string;
-    source: string;
-    target: string;
-    animated: boolean;
-  }
-
   const addEdge = (newEdge: Edge) => {
     setEdges((prev) => [...prev, newEdge]);
+  };
+
+  const [visitedPages, setVisitedPages] = useState<number[]>([]);
+
+  const [startIndex, setStartIndex] = useState(0);
+  const handleChangePage = (index: number) => {
+    setStartIndex((index - 1) * 3);
   };
 
   const initialNodes: Node[] = [];
@@ -79,120 +72,138 @@ function UserFlow() {
       backgroundColor: "#f5f5f5",
     },
   });
-  let loginCount =
-      (-1 *
-        (filteredLog.filter((item) => item.result === "login").length - 1)) /
-      2,
-    prevloginIndex = 0;
-
-  filteredLog.forEach((log, index) => {
-    if (log.result === "login") {
-      prevloginIndex = index;
-      initialNodes.push({
-        id: index.toString(),
-        data: { label: <LogNode userLog={filteredLog[index]} /> },
-        position: { x: 350, y: loginCount * 205 + centerY },
-        sourcePosition: "right",
-        targetPosition: "left",
-        style: {
-          width: "200px",
-          height: "60px",
-          fontSize: "13px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          cursor: "pointer",
-          border: "2px solid #0ea5e9",
-          borderRadius: "6px",
-          visibility: "visible",
-          backgroundColor: "#ecfeff",
-        },
-      });
-      loginCount++;
-      initialEdges.push({
-        type: "smoothstep",
-        id: "e" + id + "-" + index.toString(),
-        source: id || "",
-        target: index.toString(),
-        animated: true,
-      });
-    } else if (log.result === "signout") {
-      const loginIndex = prevloginIndex;
-      initialNodes.push({
-        id: prevloginIndex + "-expand",
-        data: {
-          label: (
-            <div
-              className="w-full h-10 flex items-center justify-center"
-              onClick={() => expand(loginIndex, index, true)}
-            >
-              <Handle
-                className="h-3 w-3 border-[3px] bg-white border-gray-400"
-                type="source"
-                position={Position.Right}
-              />
-              <Handle
-                className="h-3 w-3 border-[3px] bg-white border-gray-400"
-                type="target"
-                position={Position.Left}
-              />
-              <div>Expand</div>
-            </div>
-          ),
-        },
-        position: { x: 600, y: (loginCount - 1) * 205 + 12.5 + centerY },
-        sourcePosition: "right",
-        targetPosition: "left",
-        style: {
-          width: "100px",
-          height: "35px",
-          fontSize: "13px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          cursor: "pointer",
-          border: "2px solid grey",
-          borderRadius: "6px",
-          visibility: "visible",
-        },
-      });
-      initialNodes.push({
-        id: index.toString(),
-        data: { label: <LogNode userLog={filteredLog[index]} /> },
-        position: { x: 750, y: (loginCount - 1) * 205 + centerY },
-        sourcePosition: "right",
-        targetPosition: "left",
-        style: {
-          width: "200px",
-          height: "60px",
-          fontSize: "13px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          cursor: "pointer",
-          border: "2px solid #0ea5e9",
-          borderRadius: "6px",
-          visibility: "visible",
-          backgroundColor: "#ecfeff",
-          transition: "all 1s ease",
-        },
-      });
-      initialEdges.push({
-        type: "smoothstep",
-        id: "e-" + prevloginIndex + "-expand",
-        source: prevloginIndex.toString(),
-        target: prevloginIndex + "-expand",
-        animated: true,
-      });
-      initialEdges.push({
-        type: "smoothstep",
-        id: "e" + prevloginIndex.toString() + "-" + index.toString(),
-        source: prevloginIndex + "-expand",
-        target: index.toString(),
-        animated: true,
-      });
+  let loginCount = -1;
+  let prevloginIndex = 0;
+  let loginNumber = 0;
+  let signoutNumber = 0;
+  const [isFirst, setIsFirst] = useState(true);
+  useEffect(() => {
+    if (!isFirst) {
+      initialNodes.splice(1, initialNodes.length);
+      setNodes(initialNodes);
     }
-  });
+    setIsFirst(false);
+    filteredLog.forEach((log, index) => {
+      if (log.result === "login") {
+        loginNumber++;
+        if (loginNumber > startIndex && loginNumber <= startIndex + 3) {
+          prevloginIndex = index;
+          initialNodes.push({
+            id: index.toString(),
+            data: { label: <LogNode userLog={filteredLog[index]} /> },
+            position: { x: 350, y: loginCount * 205 + centerY },
+            sourcePosition: "right",
+            targetPosition: "left",
+            style: {
+              width: "200px",
+              height: "60px",
+              fontSize: "13px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              cursor: "pointer",
+              border: "2px solid #0ea5e9",
+              borderRadius: "6px",
+              visibility: "visible",
+              backgroundColor: "#ecfeff",
+            },
+          });
+          loginCount++;
+          if (!visitedPages.includes(index)) {
+            addEdge({
+              type: "smoothstep",
+              id: "e" + id + "-" + index.toString(),
+              source: id || "",
+              target: index.toString(),
+              animated: true,
+            });
+            visitedPages.push(index);
+          }
+        }
+      } else if (log.result === "signout") {
+        signoutNumber++;
+        if (signoutNumber > startIndex && signoutNumber <= startIndex + 3) {
+          const loginIndex = prevloginIndex;
+          initialNodes.push({
+            id: prevloginIndex + "-expand",
+            data: {
+              label: (
+                <div
+                  className="w-full h-10 flex items-center justify-center"
+                  onClick={() => expand(loginIndex, index, true)}
+                >
+                  <Handle
+                    className="h-3 w-3 border-[3px] bg-white border-gray-400"
+                    type="source"
+                    position={Position.Right}
+                  />
+                  <Handle
+                    className="h-3 w-3 border-[3px] bg-white border-gray-400"
+                    type="target"
+                    position={Position.Left}
+                  />
+                  <div>Expand</div>
+                </div>
+              ),
+            },
+            position: { x: 600, y: (loginCount - 1) * 205 + 12.5 + centerY },
+            sourcePosition: "right",
+            targetPosition: "left",
+            style: {
+              width: "100px",
+              height: "35px",
+              fontSize: "13px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              cursor: "pointer",
+              border: "2px solid grey",
+              borderRadius: "6px",
+              visibility: "visible",
+            },
+          });
+          initialNodes.push({
+            id: index.toString(),
+            data: { label: <LogNode userLog={filteredLog[index]} /> },
+            position: { x: 750, y: (loginCount - 1) * 205 + centerY },
+            sourcePosition: "right",
+            targetPosition: "left",
+            style: {
+              width: "200px",
+              height: "60px",
+              fontSize: "13px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              cursor: "pointer",
+              border: "2px solid #0ea5e9",
+              borderRadius: "6px",
+              visibility: "visible",
+              backgroundColor: "#ecfeff",
+              transition: "all 1s ease",
+            },
+          });
+          if (!visitedPages.includes(index)) {
+            addEdge({
+              type: "smoothstep",
+              id: "e-" + prevloginIndex + "-expand",
+              source: prevloginIndex.toString(),
+              target: prevloginIndex + "-expand",
+              animated: true,
+            });
+            addEdge({
+              type: "smoothstep",
+              id: "e" + prevloginIndex.toString() + "-" + index.toString(),
+              source: prevloginIndex + "-expand",
+              target: index.toString(),
+              animated: true,
+            });
+            visitedPages.push(index);
+          }
+        }
+      }
+    });
+  }, [startIndex]);
 
   const expand = (
     loginIndex: number,
@@ -484,6 +495,9 @@ function UserFlow() {
       );
     }
   }, []);
+  useEffect(() => {
+    console.log(edges);
+  }, [edges]);
   return (
     <ReactFlow
       nodes={nodes}
@@ -492,6 +506,10 @@ function UserFlow() {
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
     >
+      <Pagination
+        onChangePage={handleChangePage}
+        userNumber={filteredLog.length / 2}
+      />
       <Background color="grey" gap={16} />
       <Controls />
     </ReactFlow>

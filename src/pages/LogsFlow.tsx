@@ -84,7 +84,6 @@ function LogsFlow() {
         ) {
           selectedLogs.push(lastLogin, lastLogout);
         }
-        // if (!initialEdges.some((node) => node.id === user + "1")) {
         if (!visitedPageUser.includes(user)) {
           console.log(visitedPageUser);
           addEdge({
@@ -94,14 +93,6 @@ function LogsFlow() {
             animated: true,
           });
           visitedPageUser.push(user);
-          // initialEdges.push({
-          //   id: user + "1",
-          //   source: user,
-          //   target: user + "1",
-          //   animated: true,
-          // });
-          // }
-          // if (!initialEdges.some((node) => node.id === user + "1-2")) {
           addEdge({
             id: user + "1-2",
             source: user + "1",
@@ -109,13 +100,6 @@ function LogsFlow() {
             animated: true,
           });
         }
-        // initialEdges.push({
-        //   id: user + "1-2",
-        //   source: user + "1",
-        //   target: user + "2",
-        //   animated: true,
-        // });
-        // }
       }
     });
     setNodes(initialNodes);
