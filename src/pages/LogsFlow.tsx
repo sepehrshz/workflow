@@ -9,8 +9,11 @@ import userLogs from "../assets/userLogs.json";
 import { Link } from "react-router-dom";
 import Pagination from "../layouts/Pagination";
 import { Log } from "../types/log";
+import Filter from "../components/Filter";
 
+userLogs.sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime));
 const visitedPageUser: number[] = [];
+
 function LogsFlow() {
   const addEdge = (newEdge: Edge) => {
     setEdges((prev) => [...prev, newEdge]);
@@ -23,22 +26,29 @@ function LogsFlow() {
     setStartIndex((index - 1) * 4);
   };
 
-  //sort logs by created time
-  userLogs.sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime));
+  const [searchInput, setSearchInput] = useState("");
+  const search = (data: { user: string; selectedDates }) => {
+    console.log(data.user);
+    setSearchInput(data.user);
+  };
 
   //get all usernames
-  const userNames = userLogs.reduce((acc, item) => {
+  const userNames: string[] = userLogs.reduce((acc, item) => {
     if (!acc.includes(item.userName)) {
       acc.push(item.userName);
     }
     return acc;
   }, []);
 
+  const filteredUser: string[] = userNames.filter((user) =>
+    user.toLowerCase().includes(searchInput),
+  );
+
   //add nodes base on startIndex
   useEffect(() => {
     initialNodes.splice(0, initialNodes.length);
     setNodes(initialNodes);
-    userNames.forEach((user, index) => {
+    filteredUser.forEach((user, index) => {
       if (index <= startIndex + 3 && index >= startIndex) {
         const lastLogin = userLogs.find(
           (log) => log.result === "login" && log.userName === user,
@@ -59,7 +69,7 @@ function LogsFlow() {
               </Link>
             ),
           },
-          position: { x: 330, y: ((index % 4) + 1) * 150 - 50 },
+          position: { x: 330, y: ((index % 4) + 1) * 150 - 20 },
           count: 0,
           type: "output",
           targetPosition: "right",
@@ -132,7 +142,7 @@ function LogsFlow() {
       });
       setNodes(initialNodes);
     });
-  }, [startIndex]);
+  }, [startIndex, searchInput]);
 
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
@@ -140,10 +150,11 @@ function LogsFlow() {
     <ReactFlow nodes={nodes} edges={edges}>
       <Pagination
         onChangePage={handleChangePage}
-        userNumber={userNames.length}
+        userNumber={filteredUser.length}
       />
       <Background color="grey" gap={16} />
       <Controls />
+      <Filter search={search} />
     </ReactFlow>
   );
 }

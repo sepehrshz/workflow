@@ -14,12 +14,16 @@ import {
 import "@xyflow/react/dist/style.css";
 import { Link } from "react-router-dom";
 import userSession from "../assets/sessions.json";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { Session } from "../types/session";
 import Pagination from "../layouts/Pagination";
+import Filter from "../components/Filter";
 
+userSession.sort((a, b) => new Date(a.createdTime) - new Date(b.createdTime));
 const SessionsFlow = () => {
   const [startIndex, setStartIndex] = useState(0);
+  const [selectedDates, setSelectedDates] = useState<Date[]>();
+  const [filteredSession, setFilteredSession] = useState(userSession);
   const handleChangePage = (index: number) => {
     setStartIndex((index - 1) * 4);
   };
@@ -28,18 +32,41 @@ const SessionsFlow = () => {
   const addEdge = (newEdge: Edge) => {
     setEdges((prev) => [...prev, newEdge]);
   };
+
+  const [searchInput, setSearchInput] = useState("");
+  const search = (data: { user: string; selectedDates }) => {
+    setSearchInput(data.user);
+    setSelectedDates(data.selectedDates);
+  };
+
   const userList: string[] = [];
-  //sort logs by created time
-  userSession.sort((a, b) => new Date(a.createdTime) - new Date(b.createdTime));
 
   //get all usernames
   const userNames = [...new Set(userSession.map((item) => item.userName))];
+  const filteredUser: string[] = userNames.filter((user) =>
+    user.toLowerCase().includes(searchInput),
+  );
+  useEffect(() => {
+    if (selectedDates) {
+      const filtered = userSession.filter(
+        (session) =>
+          new Date(session.createdTime).getTime() >
+            selectedDates[0].$d.getTime() &&
+          new Date(session.createdTime).getTime() <
+            selectedDates[1].$d.getTime(),
+      );
+      setFilteredSession(filtered);
+    } else {
+      setFilteredSession(userSession);
+    }
+  }, [selectedDates]);
+
   useEffect(() => {
     //add user nodes to initialNodes array
     initialNodes.splice(0, initialNodes.length);
     setNodes(initialNodes);
     userList.splice(0, userList.length);
-    userNames.forEach((user, index) => {
+    filteredUser.forEach((user, index) => {
       if (index <= startIndex + 3 && index >= startIndex) {
         userList.push(user);
         if (!initialNodes.some((item) => item.id === user)) {
@@ -82,8 +109,8 @@ const SessionsFlow = () => {
       }
     });
 
-    //add logs nodes
-    userSession.forEach((log, index) => {
+    //add session nodes
+    filteredSession.forEach((log, index) => {
       const user = initialNodes.find((item) => item.id == log.userName);
       if (userList.includes(user?.id)) {
         if (user.count < user.sessionNum) {
@@ -133,12 +160,12 @@ const SessionsFlow = () => {
         }
       }
     });
-  }, [startIndex]);
+  }, [startIndex, searchInput, filteredSession]);
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   useEffect(() => {
-    console.log(edges);
+    // console.log(edges);
   });
   const onNodesDelete = useCallback(
     (deleted) => {
@@ -177,10 +204,11 @@ const SessionsFlow = () => {
     >
       <Pagination
         onChangePage={handleChangePage}
-        userNumber={userNames.length}
+        userNumber={filteredUser.length}
       />
       <Background color="grey" gap={16} />
       <Controls />
+      <Filter search={search} />
     </ReactFlow>
   );
 };

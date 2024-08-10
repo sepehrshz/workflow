@@ -23,7 +23,7 @@ const Pagination = ({ onChangePage, userNumber }) => {
         key={i}
         onClick={() => onButtonClick(i)}
         className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-semibold cursor-pointer
-        ${active === i ? "bg-gray-500 text-white" : "bg-white text-black ring-1 ring-inset ring-gray-300 hover:bg-gray-50"}`}
+        ${active === i ? "bg-indigo-500 text-white" : "bg-white text-black ring-1 ring-inset ring-gray-300 hover:bg-gray-50"}`}
       >
         {i}
       </a>,

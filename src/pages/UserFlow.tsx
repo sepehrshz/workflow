@@ -21,6 +21,7 @@ import SessionNode from "../components/SessionNode";
 import { Node } from "../types/node";
 import { Edge } from "../types/edge";
 import Pagination from "../layouts/Pagination";
+import Filter from "../components/Filter";
 
 userLogs.sort(
   (a, b) =>
@@ -30,9 +31,15 @@ userSession.sort(
   (a, b) =>
     new Date(a.createdTime).getTime() - new Date(b.createdTime).getTime(),
 );
+
 function UserFlow() {
   const { id } = useParams();
   const location = useLocation();
+  const [selectedDates, setSelectedDates] = useState<Date[]>();
+  const [filteredLog, setFilteredLog] = useState([]);
+  const search = (data: { user: string; selectedDates }) => {
+    setSelectedDates(data.selectedDates);
+  };
 
   const addEdge = (newEdge: Edge) => {
     setEdges((prev) => [...prev, newEdge]);
@@ -48,9 +55,21 @@ function UserFlow() {
   const initialNodes: Node[] = [];
   const initialEdges: Edge[] = [];
 
-  const filteredLog = userLogs.filter((item) => item.userName === id);
+  const logs = userLogs.filter((item) => item.userName === id);
   const filteredSession = userSession.filter((item) => item.userName === id);
 
+  useEffect(() => {
+    if (selectedDates) {
+      const filtered = logs.filter(
+        (log) =>
+          new Date(log.createdTime).getTime() > selectedDates[0].$d.getTime() &&
+          new Date(log.createdTime).getTime() < selectedDates[1].$d.getTime(),
+      );
+      setFilteredLog(filtered);
+    } else {
+      setFilteredLog(logs);
+    }
+  }, [selectedDates, id]);
   const windowHeight = window.innerHeight;
   const centerY = windowHeight / 2;
 
@@ -111,7 +130,7 @@ function UserFlow() {
           loginCount++;
           if (!visitedPages.includes(index)) {
             addEdge({
-              type: "smoothstep",
+              // type: "smoothstep",
               id: "e" + id + "-" + index.toString(),
               source: id || "",
               target: index.toString(),
@@ -185,14 +204,14 @@ function UserFlow() {
           });
           if (!visitedPages.includes(index)) {
             addEdge({
-              type: "smoothstep",
+              // type: "smoothstep",
               id: "e-" + prevloginIndex + "-expand",
               source: prevloginIndex.toString(),
               target: prevloginIndex + "-expand",
               animated: true,
             });
             addEdge({
-              type: "smoothstep",
+              // type: "smoothstep",
               id: "e" + prevloginIndex.toString() + "-" + index.toString(),
               source: prevloginIndex + "-expand",
               target: index.toString(),
@@ -203,7 +222,7 @@ function UserFlow() {
         }
       }
     });
-  }, [startIndex]);
+  }, [startIndex, filteredLog]);
 
   const expand = (
     loginIndex: number,
@@ -495,9 +514,7 @@ function UserFlow() {
       );
     }
   }, []);
-  useEffect(() => {
-    console.log(edges);
-  }, [edges]);
+
   return (
     <ReactFlow
       nodes={nodes}
@@ -508,8 +525,9 @@ function UserFlow() {
     >
       <Pagination
         onChangePage={handleChangePage}
-        userNumber={filteredLog.length / 2}
+        userNumber={filteredLog.length / 2 + 1}
       />
+      <Filter search={search} />
       <Background color="grey" gap={16} />
       <Controls />
     </ReactFlow>
