@@ -3,7 +3,7 @@ import LogCount from "../components/LogCount";
 import UserNode from "./UserNode";
 import { Link } from "react-router-dom";
 
-export const createUserNode = (user: string, index: number) => {
+export const CreateUserNode = (user: string, index: number) => {
   return {
     id: user,
     data: {
