@@ -1,7 +1,7 @@
 import { DatePicker, Select } from "antd";
 import { useState, useEffect } from "react";
 import { FaFilter } from "react-icons/fa6";
-
+import Navigator from "./Navigator";
 const { RangePicker } = DatePicker;
 
 function Filter({
@@ -46,32 +46,10 @@ function Filter({
           className="h-10 min-w-64 bg-gray-50"
         />
       </div>
-      <div className="px-4 h-full flex items-center space-x-3">
-        <span>Type: </span>
-        <Select
-          className="bg-gray-50"
-          showSearch
-          placeholder="Please select"
-          optionFilterProp="label"
-          // onChange={onChange}
-          onSearch={onSearch}
-          options={[
-            {
-              value: "jack",
-              label: "Jack",
-            },
-            {
-              value: "lucy",
-              label: "Lucy",
-            },
-            {
-              value: "tom",
-              label: "Tom",
-            },
-          ]}
-        />
+      <div className="h-full min-w-44">
+        <Navigator />
       </div>
-      <button className="relative bg-gray-100 rounded-md p-3">
+      <button className="ml-4 bg-gray-100 rounded-md p-3">
         <FaFilter />
       </button>
     </div>

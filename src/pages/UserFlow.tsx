@@ -527,7 +527,7 @@ function UserFlow() {
         onChangePage={handleChangePage}
         userNumber={filteredLog.length / 2 + 1}
       />
-      <Filter search={search} />
+      <Filter userShow={false} search={search} />
       <Background color="grey" gap={16} />
       <Controls />
     </ReactFlow>

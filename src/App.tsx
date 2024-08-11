@@ -2,7 +2,6 @@ import LogsFlow from "./pages/LogsFlow";
 import SessionsFlow from "./pages/SessionsFlow";
 import UserFlow from "../src/pages/UserFlow";
 import Landing from "./pages/Landing";
-import Navigator from "./layouts/Navigator";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -13,9 +12,7 @@ function App() {
           path="/"
           element={
             <div className="h-[100vh] w-full">
-              <Navigator>
-                <Landing />
-              </Navigator>
+              <Landing />
             </div>
           }
         />
@@ -23,9 +20,7 @@ function App() {
           path="/logs"
           element={
             <div className="h-[100vh] w-full">
-              <Navigator>
-                <LogsFlow />
-              </Navigator>
+              <LogsFlow />
             </div>
           }
         />
@@ -33,9 +28,7 @@ function App() {
           path="/sessions"
           element={
             <div className="h-[100vh] w-full">
-              <Navigator>
-                <SessionsFlow />
-              </Navigator>
+              <SessionsFlow />
             </div>
           }
         />
@@ -43,9 +36,7 @@ function App() {
           path="/user/:id"
           element={
             <div style={{ height: "100vh", width: "100%" }}>
-              <Navigator>
-                <UserFlow />
-              </Navigator>
+              <UserFlow />
             </div>
           }
         />
