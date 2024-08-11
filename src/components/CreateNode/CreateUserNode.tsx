@@ -1,6 +1,6 @@
 import React from "react";
 import LogCount from "../components/LogCount";
-import UserNode from "./UserNode";
+import UserNode from "../Node/UserNode";
 import { Link } from "react-router-dom";
 
 export const CreateUserNode = (user: string, index: number) => {

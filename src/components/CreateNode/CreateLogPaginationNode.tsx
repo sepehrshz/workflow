@@ -1,4 +1,4 @@
-import LogsPagination from "./LogsPagination";
+import LogsPagination from "../LogsPagination";
 
 export const CreateLogPaginationNode = (
   user: string,

@@ -1,9 +1,19 @@
 import { Handle, Position } from "@xyflow/react";
+import Expand from "../Expand";
 
 export const CreateExpandNode = (
   prevloginIndex: number,
   yPosition: number,
   x: number,
+  loginIndex: number,
+  index: number,
+  initialNodes,
+  filteredSession,
+  filteredLog,
+  addEdge,
+  setNodes,
+  user: string,
+  userSession,
 ) => {
   return {
     id: prevloginIndex + "-expand",
@@ -11,7 +21,20 @@ export const CreateExpandNode = (
       label: (
         <div
           className="w-full h-10 flex items-center justify-center"
-          // onClick={() => expand(loginIndex, index, true)}
+          onClick={() =>
+            Expand(
+              loginIndex,
+              index,
+              true,
+              initialNodes,
+              filteredSession,
+              filteredLog,
+              addEdge,
+              setNodes,
+              user,
+              userSession,
+            )
+          }
         >
           <Handle
             className="h-3 w-3 border-[3px] bg-white border-gray-400"

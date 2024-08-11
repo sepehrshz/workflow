@@ -13,15 +13,19 @@ import userLogs from "../assets/userLogs.json";
 import userSession from "../assets/sessions.json";
 import Pagination from "../layouts/Pagination";
 import Filter from "../components/Filter";
-import { CreateUserNode } from "../components/CreateUserNode";
-import { CreateUserStatsNode } from "../components/CreateUserStatsNode";
-import { CreateLogPaginationNode } from "../components/CreateLogPaginationNode";
-import { CreateLoginNode } from "../components/CreateLoginNode";
-import { CreateExpandNode } from "../components/CreateExpandNode";
-import { CreateSignoutNode } from "../components/CreateSignoutNode";
+import { CreateUserNode } from "../components/CreateNode/CreateUserNode";
+import { CreateUserStatsNode } from "../components/CreateNode/CreateUserStatsNode";
+import { CreateLogPaginationNode } from "../components/CreateNode/CreateLogPaginationNode";
+import { CreateLoginNode } from "../components/CreateNode/CreateLoginNode";
+import { CreateExpandNode } from "../components/CreateNode/CreateExpandNode";
+import { CreateSignoutNode } from "../components/CreateNode/CreateSignoutNode";
 import { onNodesDelete } from "../components/onNodesDelete";
 
 userLogs.sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime));
+userSession.sort(
+  (a, b) =>
+    new Date(a.createdTime).getTime() - new Date(b.createdTime).getTime(),
+);
 const visitedPageUser: number[] = [];
 // const [visitedPages, setVisitedPages] = useState<number[]>([]);
 
@@ -110,6 +114,10 @@ function LogsFlow() {
     setCurrentUser(user);
     const yPosition = position;
 
+    const filteredSession = userSession.filter(
+      (item) => item.userName === user,
+    );
+
     //delete previous user log nodes
     if (loginNodeCount !== 0) {
       if (loginNodeCount > 3)
@@ -187,7 +195,22 @@ function LogsFlow() {
           const loginIndex = prevloginIndex;
 
           //add expand node
-          initialNodes.push(CreateExpandNode(prevloginIndex, yPosition, x));
+          initialNodes.push(
+            CreateExpandNode(
+              prevloginIndex,
+              yPosition,
+              x,
+              loginIndex,
+              index,
+              initialNodes,
+              filteredSession,
+              userFilterLog,
+              addEdge,
+              setNodes,
+              user,
+              userSession,
+            ),
+          );
 
           //add signout node
           initialNodes.push(
@@ -223,6 +246,11 @@ function LogsFlow() {
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
+  useEffect(() => {
+    initialNodes.pop();
+    setNodes(initialNodes);
+  }, []);
 
   return (
     <ReactFlow

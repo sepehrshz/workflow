@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Handle, Position } from "@xyflow/react";
-import profile from "../assets/profile.png";
-import arrow from "../assets/arrow.png";
+import profile from "../../assets/profile.png";
+import arrow from "../../assets/arrow.png";
 import { useNavigate } from "react-router-dom";
-import { Session } from "../types/session";
+import { Session } from "../../types/session";
 const SessionNode = ({ userSession }: { userSession: Session }) => {
   const navigate = useNavigate();
   const [click, setClick] = useState(false);

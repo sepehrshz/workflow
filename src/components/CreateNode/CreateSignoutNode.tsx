@@ -1,16 +1,16 @@
-import LogNode from "./LogNode";
+import LogNode from "../Node/LogNode";
 
-export const CreateLoginNode = (
+export const CreateSignoutNode = (
   user: string,
-  userFilterLog,
   index: number,
-  x: number,
   yPosition: number,
+  x: number,
+  userFilterLog,
 ) => {
   return {
     id: user + "-" + index.toString(),
     data: { label: <LogNode userLog={userFilterLog[index]} /> },
-    position: { x: 650, y: yPosition + x * 120 },
+    position: { x: 1050, y: yPosition + (x - 1) * 120 },
     sourcePosition: "right",
     targetPosition: "left",
     style: {
@@ -25,6 +25,7 @@ export const CreateLoginNode = (
       borderRadius: "6px",
       visibility: "visible",
       backgroundColor: "#ecfeff",
+      transition: "all 1s ease",
     },
   };
 };

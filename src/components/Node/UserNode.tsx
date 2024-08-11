@@ -1,5 +1,5 @@
 import { Handle, Position } from "@xyflow/react";
-import profile from "../assets/profile.png";
+import profile from "../../assets/profile.png";
 
 const UserNode = ({ userName }) => {
   return (

@@ -1,8 +1,8 @@
 import { Node } from "../types/node";
 import { Edge } from "../types/edge";
-import SessionNode from "../components/SessionNode";
+import SessionNode from "../components/Node/SessionNode";
 import { useState } from "react";
-import UserNode from "../components/UserNode";
+import UserNode from "../components/Node/UserNode";
 import {
   ReactFlow,
   Background,

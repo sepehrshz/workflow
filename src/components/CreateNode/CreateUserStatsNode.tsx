@@ -1,4 +1,4 @@
-import LogCountNode from "./LogCountNode";
+import LogCountNode from "../Node/LogCountNode";
 
 type ShowLogsFunction = (user: string, position: number) => void;
 

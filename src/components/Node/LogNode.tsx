@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Handle, Position } from "@xyflow/react";
-import profile from "../assets/profile.png";
-import arrow from "../assets/arrow.png";
+import profile from "../../assets/profile.png";
+import arrow from "../../assets/arrow.png";
 import { useNavigate } from "react-router-dom";
-import { Log } from "../types/log";
+import { Log } from "../../types/log";
 const LogNode = ({ userLog }: { userLog: Log }) => {
   const [click, setClick] = useState(false);
   const date = new Date(userLog.createdTime);
