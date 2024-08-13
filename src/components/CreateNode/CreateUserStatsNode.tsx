@@ -1,6 +1,6 @@
 import LogCountNode from "../Node/LogCountNode";
 
-type ShowLogsFunction = (user: string, position: number) => void;
+type ShowLogsFunction = (user: string, position: number, open: boolean) => void;
 
 export const CreateUserStatsNode = (
   user: string,
@@ -9,11 +9,21 @@ export const CreateUserStatsNode = (
   sessionCount: number,
   showLogs: ShowLogsFunction,
 ) => {
+  let open = true;
+  const toggle = () => {
+    if (open) {
+      showLogs(user, ((index % 4) + 1) * 150 - 20, true, index);
+      open = false;
+    } else {
+      showLogs(user, ((index % 4) + 1) * 150 - 20, false, index);
+      open = true;
+    }
+  };
   return {
     id: user + "-logs",
     data: {
       label: (
-        <div onClick={() => showLogs(user, ((index % 4) + 1) * 150 - 20)}>
+        <div onClick={() => toggle()}>
           <LogCountNode logCount={logCount} sessionCount={sessionCount} />
         </div>
       ),

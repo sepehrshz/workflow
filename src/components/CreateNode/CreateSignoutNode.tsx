@@ -10,7 +10,7 @@ export const CreateSignoutNode = (
   return {
     id: user + "-" + index.toString(),
     data: { label: <LogNode userLog={userFilterLog[index]} /> },
-    position: { x: 1050, y: yPosition + (x - 1) * 120 },
+    position: { x: 1050, y: yPosition + (x - 1) * 80 },
     sourcePosition: "right",
     targetPosition: "left",
     style: {

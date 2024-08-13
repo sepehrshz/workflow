@@ -322,21 +322,21 @@ function UserFlow() {
           };
           addEdge(signoutEdge);
         }
-        // shrink node
+        // collapse node
         initialNodes.push({
-          id: loginIndex + "-shrink",
+          id: loginIndex + "-collapse",
           data: {
             label: (
               <div
                 className="w-full h-10 flex items-center justify-center"
-                onClick={() => shrink(loginIndex, signoutIndex, index)}
+                onClick={() => collapse(loginIndex, signoutIndex, index)}
               >
                 <Handle
                   className="h-3 w-3 border-[3px] bg-white border-gray-400"
                   type="target"
                   position={Position.Left}
                 />
-                <div>Shrink</div>
+                <div>collapse</div>
               </div>
             ),
           },
@@ -363,24 +363,28 @@ function UserFlow() {
         });
         setNodes(initialNodes);
         if (firstTime) {
-          const shrinkEdge = {
-            id: `e-${loginIndex}-shrink`,
+          const collapseEdge = {
+            id: `e-${loginIndex}-collapse`,
             source: signoutIndex.toString(),
-            target: `${loginIndex}-shrink`,
+            target: `${loginIndex}-collapse`,
             animated: true,
           };
-          addEdge(shrinkEdge);
+          addEdge(collapseEdge);
         }
       }
     });
   };
 
-  const shrink = (loginIndex: number, signoutIndex: number, index: number) => {
-    const shrinkNodeIndex = initialNodes.findIndex(
-      (item) => item.id === loginIndex + "-shrink",
+  const collapse = (
+    loginIndex: number,
+    signoutIndex: number,
+    index: number,
+  ) => {
+    const collapseNodeIndex = initialNodes.findIndex(
+      (item) => item.id === loginIndex + "-collapse",
     );
-    //delete shrink node
-    initialNodes.splice(shrinkNodeIndex, 1);
+    //delete collapse node
+    initialNodes.splice(collapseNodeIndex, 1);
     //delete expanded nodes
     while (index >= 0) {
       initialNodes.splice(

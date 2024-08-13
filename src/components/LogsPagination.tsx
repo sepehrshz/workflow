@@ -17,7 +17,7 @@ const LogsPagination = ({ onChangePage, userNumber }) => {
   };
   const divs = [];
 
-  for (let i = 1; i <= Math.ceil(userNum / 4); i++) {
+  for (let i = 1; i <= Math.ceil(userNum / 3); i++) {
     divs.push(
       <a
         key={i}

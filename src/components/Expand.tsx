@@ -11,8 +11,12 @@ const Expand = (
   addEdge,
   setNodes,
   user: string,
-  userSession,
+  showLogs,
+  showLogsIndex,
 ) => {
+  const collapse = () => {
+    showLogs(user, ((showLogsIndex % 4) + 1) * 150 - 20, true);
+  };
   const expandNodeIndex = initialNodes.findIndex(
     (item) => item.id === loginIndex + "-expand",
   );
@@ -34,7 +38,7 @@ const Expand = (
     if (!initialNodes.some((node) => node.id === sessionNodeId)) {
       //add session nodes
       initialNodes.push(
-        CreateSessionNode(loginIndex, index, userSession, loginNode),
+        CreateSessionNode(loginIndex, index, filteredSession, loginNode),
       );
       setNodes(initialNodes);
       setTimeout(() => {
@@ -48,7 +52,7 @@ const Expand = (
     if (index === 0 && firstTime) {
       const newEdge = {
         id: `e-session-login[${loginIndex}]-${index}`,
-        source: loginIndex.toString(),
+        source: `${user}-${loginIndex}`,
         target: `session-${loginIndex}-${index}`,
         animated: true,
       };
@@ -64,33 +68,33 @@ const Expand = (
     }
     if (index === filteredSessionTime.length - 1) {
       const signoutNode = initialNodes.find(
-        (item) => item.id == signoutIndex.toString(),
+        (item) => item.id == `${user}-${loginIndex + 1}`,
       );
       signoutNode!.position.x = loginNode!.position.x + (index + 2) * 250;
       if (firstTime) {
         const signoutEdge = {
           id: `e-session-${index}-signout${loginIndex}`,
           source: `session-${loginIndex}-${index}`,
-          target: signoutIndex.toString(),
+          target: signoutNode.id,
           animated: true,
         };
         addEdge(signoutEdge);
       }
-      // shrink node
+      // collapse node
       initialNodes.push({
-        id: loginIndex + "-shrink",
+        id: loginIndex + "-collapse",
         data: {
           label: (
             <div
               className="w-full h-10 flex items-center justify-center"
-              //   onClick={() => shrink(loginIndex, signoutIndex, index)}
+              onClick={() => collapse(loginIndex, signoutIndex, index)}
             >
               <Handle
                 className="h-3 w-3 border-[3px] bg-white border-gray-400"
                 type="target"
                 position={Position.Left}
               />
-              <div>Shrink</div>
+              <div>Collapse</div>
             </div>
           ),
         },
@@ -117,13 +121,13 @@ const Expand = (
       });
       setNodes(initialNodes);
       if (firstTime) {
-        const shrinkEdge = {
-          id: `e-${loginIndex}-shrink`,
-          source: signoutIndex.toString(),
-          target: `${loginIndex}-shrink`,
+        const collapseEdge = {
+          id: `e-${loginIndex}-collapse`,
+          source: signoutNode.id,
+          target: `${loginIndex}-collapse`,
           animated: true,
         };
-        addEdge(shrinkEdge);
+        addEdge(collapseEdge);
       }
     }
   });

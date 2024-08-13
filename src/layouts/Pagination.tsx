@@ -30,7 +30,7 @@ const Pagination = ({ onChangePage, userNumber }) => {
     );
   }
   return (
-    <div className="absolute z-40 bg-white bottom-8 flex items-center justify-between left-1/2 -translate-x-1/2 rounded-md sm:px-6">
+    <div className="absolute z-40 bg-white bottom-8 flex items-center justify-between left-1/2 -translate-x-1/2 rounded-md">
       <div className="flex flex-1 justify-between sm:hidden">
         <a
           href="#"

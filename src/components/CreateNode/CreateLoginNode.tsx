@@ -10,7 +10,7 @@ export const CreateLoginNode = (
   return {
     id: user + "-" + index.toString(),
     data: { label: <LogNode userLog={userFilterLog[index]} /> },
-    position: { x: 650, y: yPosition + x * 120 },
+    position: { x: 650, y: yPosition + x * 80 },
     sourcePosition: "right",
     targetPosition: "left",
     style: {

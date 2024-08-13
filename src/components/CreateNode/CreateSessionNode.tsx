@@ -3,9 +3,10 @@ import SessionNode from "../Node/SessionNode";
 export const CreateSessionNode = (
   loginIndex: number,
   index: number,
-  userSession,
+  filteredSession,
   loginNode,
 ) => {
+  console.log(loginIndex);
   return {
     id: `session-${loginIndex}-${index}`,
     type: "default",
@@ -13,7 +14,7 @@ export const CreateSessionNode = (
       label: (
         <SessionNode
           key={`session-${loginIndex}-${index}`}
-          userSession={userSession}
+          userSession={filteredSession[index]}
         />
       ),
     },
