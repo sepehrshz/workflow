@@ -1,18 +1,21 @@
 import { Position, Handle } from "@xyflow/react";
 import { CreateSessionNode } from "./CreateNode/CreateSessionNode";
+import { Node } from "../types/node";
+import { Session } from "../types/session";
+import { Log } from "../types/log";
 
 const Expand = (
   loginIndex: number,
   signoutIndex: number,
   firstTime: boolean,
-  initialNodes,
-  filteredSession,
-  filteredLog,
+  initialNodes: Node[],
+  filteredSession: Session[],
+  filteredLog: Log[],
   addEdge,
   setNodes,
   user: string,
   showLogs,
-  showLogsIndex,
+  showLogsIndex: number,
 ) => {
   const collapse = () => {
     showLogs(user, ((showLogsIndex % 4) + 1) * 150 - 20, true);
@@ -30,7 +33,7 @@ const Expand = (
         new Date(filteredLog[signoutIndex].createdTime),
   );
   const loginNode = initialNodes.find(
-    (item) => item.id == user + "-" + loginIndex,
+    (item) => item.id == user + "-login-" + loginIndex,
   );
   filteredSessionTime.forEach((session, index) => {
     const sessionNodeId = `session-${loginIndex}-${index}`;
@@ -52,7 +55,7 @@ const Expand = (
     if (index === 0 && firstTime) {
       const newEdge = {
         id: `e-session-login[${loginIndex}]-${index}`,
-        source: `${user}-${loginIndex}`,
+        source: `${user}-login-${loginIndex}`,
         target: `session-${loginIndex}-${index}`,
         animated: true,
       };
@@ -68,7 +71,7 @@ const Expand = (
     }
     if (index === filteredSessionTime.length - 1) {
       const signoutNode = initialNodes.find(
-        (item) => item.id == `${user}-${loginIndex + 1}`,
+        (item) => item.id == `${user}-signout-${loginIndex + 1}`,
       );
       signoutNode!.position.x = loginNode!.position.x + (index + 2) * 250;
       if (firstTime) {

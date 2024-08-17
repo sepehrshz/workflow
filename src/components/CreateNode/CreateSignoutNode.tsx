@@ -8,7 +8,7 @@ export const CreateSignoutNode = (
   userFilterLog,
 ) => {
   return {
-    id: user + "-" + index.toString(),
+    id: user + "-signout-" + index,
     data: { label: <LogNode userLog={userFilterLog[index]} /> },
     position: { x: 1050, y: yPosition + (x - 1) * 80 },
     sourcePosition: "right",

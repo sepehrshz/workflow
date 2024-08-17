@@ -6,7 +6,6 @@ export const CreateSessionNode = (
   filteredSession,
   loginNode,
 ) => {
-  console.log(loginIndex);
   return {
     id: `session-${loginIndex}-${index}`,
     type: "default",

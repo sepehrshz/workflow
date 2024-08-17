@@ -1,5 +1,8 @@
 import { Handle, Position } from "@xyflow/react";
 import Expand from "../Expand";
+import { Node } from "../../types/node";
+import { Session } from "../../types/session";
+import { Log } from "../../types/log";
 
 export const CreateExpandNode = (
   prevloginIndex: number,
@@ -7,14 +10,14 @@ export const CreateExpandNode = (
   x: number,
   loginIndex: number,
   index: number,
-  initialNodes,
-  filteredSession,
-  filteredLog,
+  initialNodes: Node[],
+  filteredSession: Session[],
+  filteredLog: Log[],
   addEdge,
   setNodes,
   user: string,
   showLogs,
-  showLogsIndex,
+  showLogsIndex: number,
 ) => {
   const expandClick = () => {
     Expand(

@@ -20,7 +20,7 @@ export const CreateUserStatsNode = (
     }
   };
   return {
-    id: user + "-logs",
+    id: user + "-stats",
     data: {
       label: (
         <div onClick={() => toggle()}>

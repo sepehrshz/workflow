@@ -26,12 +26,13 @@ userSession.sort(
   (a, b) =>
     new Date(a.createdTime).getTime() - new Date(b.createdTime).getTime(),
 );
-const visitedPageUser: number[] = [];
 
+const visitedPage: string[] = [];
 function LogsFlow() {
   const addEdge = (newEdge: Edge) => {
     setEdges((prev) => [...prev, newEdge]);
   };
+
   const initialNodes: Node[] = [],
     initialEdges: Edge[] = [];
 
@@ -50,8 +51,9 @@ function LogsFlow() {
     setSearchInput(data.user);
     setSelectedDates(data.selectedDates);
   };
-  const [currentUser, setCurrentUser] = useState<string>("");
+  let currentUser = "";
 
+  const [isDone, setIsDone] = useState(false);
   //get all usernames
   const userNames: string[] = userLogs.reduce((acc, item) => {
     if (!acc.includes(item.userName)) {
@@ -84,26 +86,27 @@ function LogsFlow() {
           CreateUserStatsNode(user, index, logCount, sessionCount, showLogs),
         );
 
-        //check to not add duplicate edges
-        if (!visitedPageUser.includes(user)) {
+        if (!visitedPage.includes(user)) {
           addEdge({
-            id: "e-" + user + "-logs",
+            id: "e-" + user + "-stats",
             source: user,
-            target: user + "-logs",
+            target: user + "-stats",
             animated: true,
           });
-          visitedPageUser.push(user);
+          visitedPage.push(user);
         }
       }
     });
     setNodes(initialNodes);
+    setIsDone(true);
   }, [startIndex, searchInput, selectedDates, logStartIndex]);
 
   //handle showing logs in other page
   useEffect(() => {
+    console.log(isDone);
     const index = filteredUser.findIndex((user) => user === currentUser);
     showLogs(currentUser, ((index % 4) + 1) * 150 - 20, true);
-  }, [logStartIndex, selectedDates]);
+  }, [logStartIndex, selectedDates, isDone]);
 
   //show logs when click
   let loginNodeCount = 0;
@@ -111,32 +114,43 @@ function LogsFlow() {
     user: string,
     position: number,
     open: boolean,
-    showLogsIndex: number,
+    showLogsIndex?: number,
   ) => {
+    if (currentUser !== user && currentUser !== "") {
+      setLogStartIndex(0);
+      if (loginNodeCount !== 0) {
+        if (loginNodeCount > 3)
+          initialNodes.splice(
+            initialNodes.length - 10,
+            initialNodes.length - 1,
+          );
+        else
+          initialNodes.splice(
+            initialNodes.length - 1 - loginNodeCount * 3,
+            initialNodes.length - 1,
+          );
+        setNodes(initialNodes);
+        setEdges((prev) => prev.slice(0, 4));
+      }
+      currentUser = user;
+      loginNodeCount = 0;
+    }
     if (open) {
-      if (currentUser !== user) setLogStartIndex(0);
-      setCurrentUser(user);
+      currentUser = user;
+
       const yPosition = position;
 
       const filteredSession = userSession.filter(
         (item) => item.userName === user,
       );
 
-      //delete previous user log nodes
       if (loginNodeCount !== 0) {
-        if (loginNodeCount > 3)
-          initialNodes.splice(initialNodes.length - 10, initialNodes.length);
-        else
-          initialNodes.splice(
-            initialNodes.length - loginNodeCount * 3 - 1,
-            initialNodes.length - 1,
-          );
-        setNodes(initialNodes);
         loginNodeCount = 0;
       }
 
       let prevloginIndex = 0;
       let userFilterLog;
+
       if (selectedDates) {
         userFilterLog = userLogs.filter(
           (log) =>
@@ -146,10 +160,10 @@ function LogsFlow() {
               selectedDates[1].$d.getTime() &&
             log.userName === user,
         );
-        console.log(userFilterLog);
       } else {
         userFilterLog = userLogs.filter((log) => log.userName === user);
       }
+
       const handleLogPage = (index: number) => {
         setLogStartIndex((index - 1) * 3);
       };
@@ -184,15 +198,12 @@ function LogsFlow() {
               CreateLoginNode(user, userFilterLog, index, x, yPosition),
             );
 
-            // if (!visitedPages.includes(index)) {
             addEdge({
-              id: "e" + user + "-" + index.toString(),
-              source: user + "-logs",
-              target: user + "-" + index.toString(),
+              id: "e-" + user + "-login-" + index,
+              source: user + "-stats",
+              target: user + "-login-" + index,
               animated: true,
             });
-            // visitedPages.push(index);
-            // }
           }
         } else if (log.result === "signout") {
           if (
@@ -227,20 +238,14 @@ function LogsFlow() {
             setNodes(initialNodes);
             addEdge({
               id: "e-" + user + "-" + prevloginIndex + "-expand",
-              source: user + "-" + prevloginIndex.toString(),
+              source: user + "-login-" + prevloginIndex,
               target: prevloginIndex + "-expand",
               animated: true,
             });
             addEdge({
-              id:
-                "e" +
-                user +
-                "-" +
-                prevloginIndex.toString() +
-                "-" +
-                index.toString(),
+              id: "e-" + user + "-signout-" + index,
               source: prevloginIndex + "-expand",
-              target: user + "-" + index.toString(),
+              target: user + "-signout-" + index,
               animated: true,
             });
           }
@@ -249,13 +254,17 @@ function LogsFlow() {
     } else {
       if (loginNodeCount !== 0) {
         if (loginNodeCount > 3)
-          initialNodes.splice(initialNodes.length - 10, initialNodes.length);
+          initialNodes.splice(
+            initialNodes.length - 10,
+            initialNodes.length - 1,
+          );
         else
           initialNodes.splice(
-            initialNodes.length - loginNodeCount * 3 - 1,
+            initialNodes.length - 1 - loginNodeCount * 3,
             initialNodes.length - 1,
           );
         setNodes(initialNodes);
+        setEdges((prev) => prev.slice(0, 4));
         loginNodeCount = 0;
       }
     }
@@ -264,12 +273,13 @@ function LogsFlow() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   useEffect(() => {
-    console.log(nodes);
-  }, [nodes]);
-  // useEffect(() => {
-  //   initialNodes.pop();
-  //   setNodes(initialNodes);
-  // }, []);
+    console.log(edges);
+  }, [edges]);
+
+  useEffect(() => {
+    initialNodes.pop();
+    setNodes(initialNodes);
+  }, []);
 
   return (
     <ReactFlow
