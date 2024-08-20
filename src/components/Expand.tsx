@@ -16,8 +16,11 @@ const Expand = (
   user: string,
   showLogs,
   showLogsIndex: number,
+  setEdges,
 ) => {
   const collapse = () => {
+    setEdges((prev) => prev.slice(0, 12));
+    showLogs(user, ((showLogsIndex % 4) + 1) * 150 - 20, false);
     showLogs(user, ((showLogsIndex % 4) + 1) * 150 - 20, true);
   };
   const expandNodeIndex = initialNodes.findIndex(

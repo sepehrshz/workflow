@@ -11,13 +11,11 @@ export const CreateUserStatsNode = (
 ) => {
   let open = true;
   const toggle = () => {
-    if (open) {
-      showLogs(user, ((index % 4) + 1) * 150 - 20, true, index);
-      open = false;
-    } else {
+    if (open) showLogs(user, ((index % 4) + 1) * 150 - 20, true, index);
+    else {
       showLogs(user, ((index % 4) + 1) * 150 - 20, false, index);
-      open = true;
     }
+    open = !open;
   };
   return {
     id: user + "-stats",

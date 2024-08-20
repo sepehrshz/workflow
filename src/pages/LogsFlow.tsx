@@ -53,7 +53,6 @@ function LogsFlow() {
   };
   let currentUser = "";
 
-  const [isDone, setIsDone] = useState(false);
   //get all usernames
   const userNames: string[] = userLogs.reduce((acc, item) => {
     if (!acc.includes(item.userName)) {
@@ -98,15 +97,13 @@ function LogsFlow() {
       }
     });
     setNodes(initialNodes);
-    setIsDone(true);
   }, [startIndex, searchInput, selectedDates, logStartIndex]);
 
   //handle showing logs in other page
   useEffect(() => {
-    console.log(isDone);
     const index = filteredUser.findIndex((user) => user === currentUser);
     showLogs(currentUser, ((index % 4) + 1) * 150 - 20, true);
-  }, [logStartIndex, selectedDates, isDone]);
+  }, [logStartIndex, selectedDates]);
 
   //show logs when click
   let loginNodeCount = 0;
@@ -116,6 +113,7 @@ function LogsFlow() {
     open: boolean,
     showLogsIndex?: number,
   ) => {
+    //delete previous user logs nodes
     if (currentUser !== user && currentUser !== "") {
       setLogStartIndex(0);
       if (loginNodeCount !== 0) {
@@ -227,6 +225,7 @@ function LogsFlow() {
                 user,
                 showLogs,
                 showLogsIndex,
+                setEdges,
               ),
             );
 

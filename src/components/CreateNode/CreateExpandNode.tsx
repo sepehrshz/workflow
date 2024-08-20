@@ -18,22 +18,8 @@ export const CreateExpandNode = (
   user: string,
   showLogs,
   showLogsIndex: number,
+  setEdges,
 ) => {
-  const expandClick = () => {
-    Expand(
-      loginIndex,
-      index,
-      true,
-      initialNodes,
-      filteredSession,
-      filteredLog,
-      addEdge,
-      setNodes,
-      user,
-      showLogs,
-      showLogsIndex,
-    );
-  };
   return {
     id: prevloginIndex + "-expand",
     data: {
@@ -53,6 +39,7 @@ export const CreateExpandNode = (
               user,
               showLogs,
               showLogsIndex,
+              setEdges,
             )
           }
         >
