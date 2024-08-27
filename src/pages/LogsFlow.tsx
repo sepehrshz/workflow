@@ -20,6 +20,7 @@ import { CreateLoginNode } from "../components/CreateNode/CreateLoginNode";
 import { CreateExpandNode } from "../components/CreateNode/CreateExpandNode";
 import { CreateSignoutNode } from "../components/CreateNode/CreateSignoutNode";
 import { onNodesDelete } from "../components/onNodesDelete";
+import LogsPagination from "../components/LogsPagination";
 
 userLogs.sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime));
 userSession.sort(
@@ -33,13 +34,15 @@ function LogsFlow() {
     setEdges((prev) => [...prev, newEdge]);
   };
 
-  const initialNodes: Node[] = [];
+  // const initialNodes: Node[] = [];
+  const initialNodes = useRef<Node[]>([]);
   const initialEdges: Edge[] = [];
 
   const [startIndex, setStartIndex] = useState(0);
 
   // let currentPageLoginNode = 0;
-  const [currentPageLoginNode, setCurrentPageLoginNode] = useState(0);
+  // const [currentPageLoginNode, setCurrentPageLoginNode] = useState(0);
+  const currentPageLoginNode = useRef(0);
 
   const handleChangePage = (index: number) => {
     setStartIndex((index - 1) * 4);
@@ -71,12 +74,12 @@ function LogsFlow() {
 
   //add users and stats nodes
   useEffect(() => {
-    initialNodes.splice(0, initialNodes.length);
-    setNodes(initialNodes);
+    initialNodes.current.splice(0, initialNodes.current.length);
+    setNodes(initialNodes.current);
     filteredUser.forEach((user, index) => {
       if (index <= startIndex + 3 && index >= startIndex) {
         //add user nodes
-        initialNodes.push(CreateUserNode(user, index));
+        initialNodes.current.push(CreateUserNode(user, index));
 
         //find number of user logs and sessions
         const logCount = userLogs.filter((log) => log.userName === user).length;
@@ -85,7 +88,7 @@ function LogsFlow() {
         ).length;
 
         //add user statistics node
-        initialNodes.push(
+        initialNodes.current.push(
           CreateUserStatsNode(user, index, logCount, sessionCount, showLogs),
         );
 
@@ -100,7 +103,7 @@ function LogsFlow() {
         }
       }
     });
-    setNodes(initialNodes);
+    setNodes(initialNodes.current);
   }, [startIndex, searchInput, selectedDates]);
 
   //handle showing logs in other page
@@ -108,9 +111,30 @@ function LogsFlow() {
     const index = filteredUser.findIndex(
       (user) => user === currentUser.current,
     );
-    setCurrentPageLoginNode(0);
+    console.log(currentPageLoginNode.current);
+    if (currentPageLoginNode.current !== 0) {
+      if (currentPageLoginNode.current > 3)
+        initialNodes.current.splice(
+          initialNodes.current.length - 10,
+          initialNodes.current.length - 1,
+        );
+      else
+        initialNodes.current.splice(
+          initialNodes.current.length - currentPageLoginNode.current * 3,
+          initialNodes.current.length - 1,
+        );
+    }
+    // setCurrentPageLoginNode(0);
+    currentPageLoginNode.current = 0;
+    setNodes(initialNodes.current.slice(0, 8));
     showLogs(currentUser.current, ((index % 4) + 1) * 150 - 20, true);
-  }, [logStartIndex, selectedDates, currentUser]);
+  }, [
+    logStartIndex,
+    selectedDates,
+    currentUser,
+    initialNodes,
+    currentPageLoginNode,
+  ]);
 
   //show logs when click
   let loginNodeCount = 0;
@@ -125,22 +149,24 @@ function LogsFlow() {
       setLogStartIndex(0);
       if (loginNodeCount !== 0) {
         if (loginNodeCount > 3)
-          initialNodes.splice(
-            initialNodes.length - 10,
-            initialNodes.length - 1,
+          initialNodes.current.splice(
+            initialNodes.current.length - 10,
+            initialNodes.current.length - 1,
           );
         else
-          initialNodes.splice(
-            initialNodes.length - 1 - loginNodeCount * 3,
-            initialNodes.length - 1,
+          initialNodes.current.splice(
+            initialNodes.current.length - 1 - loginNodeCount * 3,
+            initialNodes.current.length - 1,
           );
-        setNodes(initialNodes);
+        setNodes(initialNodes.current);
         setEdges((prev) => prev.slice(0, 4));
       }
       loginNodeCount = 0;
       currentUser.current = user;
-      setCurrentPageLoginNode(0);
+      // setCurrentPageLoginNode(0);
+      currentPageLoginNode.current = 0;
     }
+    //show user logs
     if (open) {
       currentUser.current = user;
       const yPosition = position;
@@ -172,7 +198,7 @@ function LogsFlow() {
       };
 
       // add logs pagination node
-      initialNodes.push(
+      initialNodes.current.push(
         CreateLogPaginationNode(
           user,
           handleLogPage,
@@ -193,11 +219,12 @@ function LogsFlow() {
             loginNodeCount > logStartIndex &&
             loginNodeCount <= logStartIndex + 3
           ) {
-            setCurrentPageLoginNode((prev) => prev + 1);
+            // setCurrentPageLoginNode((prev) => prev + 1);
+            currentPageLoginNode.current = currentPageLoginNode.current + 1;
             prevloginIndex = index;
 
             //add login node
-            initialNodes.push(
+            initialNodes.current.push(
               CreateLoginNode(user, userFilterLog, index, x, yPosition),
             );
 
@@ -207,7 +234,7 @@ function LogsFlow() {
               target: user + "-login-" + index,
               animated: true,
             });
-            setNodes(initialNodes);
+            setNodes(initialNodes.current);
           }
         } else if (log.result === "signout") {
           if (
@@ -216,14 +243,14 @@ function LogsFlow() {
           ) {
             const loginIndex = prevloginIndex;
             //add expand node
-            initialNodes.push(
+            initialNodes.current.push(
               CreateExpandNode(
                 prevloginIndex,
                 yPosition,
                 x,
                 loginIndex,
                 index,
-                initialNodes,
+                initialNodes.current,
                 filteredSession,
                 userFilterLog,
                 addEdge,
@@ -236,10 +263,10 @@ function LogsFlow() {
             );
 
             //add signout node
-            initialNodes.push(
+            initialNodes.current.push(
               CreateSignoutNode(user, index, yPosition, x, userFilterLog),
             );
-            setNodes(initialNodes);
+            setNodes(initialNodes.current);
 
             addEdge({
               id: "e-" + user + "-" + prevloginIndex + "-expand",
@@ -256,35 +283,44 @@ function LogsFlow() {
           }
         }
       });
-    } else if (!open) {
+    }
+    //hide user logs
+    else if (!open) {
+      console.log(currentPageLoginNode.current);
       if (loginNodeCount !== 0) {
-        if (loginNodeCount > 3)
-          initialNodes.splice(
-            initialNodes.length - 10,
-            initialNodes.length - 1,
+        if (currentPageLoginNode.current === 3)
+          initialNodes.current.splice(
+            initialNodes.current.length - 10,
+            initialNodes.current.length - 1,
           );
-        else
-          initialNodes.splice(
-            initialNodes.length - 1 - loginNodeCount * 3,
-            initialNodes.length - 1,
+        else if (currentPageLoginNode.current === 2)
+          initialNodes.current.splice(
+            initialNodes.current.length - 8,
+            initialNodes.current.length - 1,
           );
-        setNodes(initialNodes);
+        else {
+          initialNodes.current.splice(
+            initialNodes.current.length - 4,
+            initialNodes.current.length - 1,
+          );
+        }
+        setNodes(initialNodes.current);
         setEdges((prev) => prev.slice(0, 4));
         loginNodeCount = 0;
       }
     }
   };
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes.current);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
-  // useEffect(() => {
-  //   console.log(nodes);
-  // }, [nodes]);
+  useEffect(() => {
+    console.log(nodes);
+  }, [nodes]);
 
   useEffect(() => {
-    initialNodes.pop();
-    setNodes(initialNodes);
+    initialNodes.current.pop();
+    setNodes(initialNodes.current);
   }, []);
 
   return (
